@@ -15,9 +15,9 @@ namespace BookstoreApplication.Data
 
         public static List<Publisher> Publishers = new()
         {
-            new Publisher { Id = 1, Name = "Penguin Books", Address = "80 Strand, London", Website = "https://penguin.co.uk" },
-            new Publisher { Id = 2, Name = "Bloomsbury", Address = "50 Bedford Square, London", Website = "https://www.bloomsbury.com" },
-            new Publisher { Id = 3, Name = "Vintage Books", Address = "New York, USA", Website = "https://www.vintagebooks.com" }
+            new Publisher { Id = 1, Name = "Penguin Books", Adress = "80 Strand, London", Website = "https://penguin.co.uk" },
+            new Publisher { Id = 2, Name = "Bloomsbury", Adress = "50 Bedford Square, London", Website = "https://www.bloomsbury.com" },
+            new Publisher { Id = 3, Name = "Vintage Books", Adress = "New York, USA", Website = "https://www.vintagebooks.com" }
         };
 
         public static List<Book> Books = new()
