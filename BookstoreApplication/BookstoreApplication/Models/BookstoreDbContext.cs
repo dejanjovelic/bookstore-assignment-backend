@@ -19,19 +19,28 @@ namespace BookstoreApplication.Models
         {
             modelBuilder.Entity<AuthorAwardRecord>(entity => {
                 entity.ToTable("AuthorAwardBridge");
-                entity.HasOne(record=>record.Author)
-                .WithMany(author=>author.AuthorAwards)
-                .HasForeignKey(record=>record.AuthorId)
+
+                entity.HasOne(record => record.Author)
+                .WithMany(author => author.AuthorAwards)
+                .HasForeignKey(record => record.AuthorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(record=>record.Award)
+                .WithMany(award=> award.AuthorAwards)
+                .HasForeignKey(record=>record.AwardId)
                 .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Author>(entity =>
             {
-                entity.Property(author=>author.DateOfBirth).HasColumnName("Bithday");
+                entity.Property(author => author.DateOfBirth).HasColumnName("Birthday");
             });
 
+            modelBuilder.Entity<Book>()
+                .HasOne(book=>book.Publisher)
+                .WithMany()
+                .HasForeignKey(book=>book.PublisherId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
-
-       
     }
 }
