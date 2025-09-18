@@ -1,6 +1,9 @@
 ﻿using BookstoreApplication.Data;
 using BookstoreApplication.Models;
+using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -10,103 +13,139 @@ namespace BookstoreApplication.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
+        private BooksRepository _booksRepository;
+        private AuthorsRepository _authorsRepository;
+        private PublishersRepository _publishersRepository;
+
+        public BooksController(BooksRepository booksRepository, AuthorsRepository authorsRepository, PublishersRepository publishersRepository)
+        {
+            this._booksRepository = booksRepository;
+            this._authorsRepository = authorsRepository;
+            this._publishersRepository = publishersRepository;
+        }
+
+
         // GET: api/books
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(DataStore.Books);
+            try
+            {
+                return Ok(await _booksRepository.GetAll());
+            }
+            catch (Exception ex)
+            {
+                return Problem("An error occured while fetching Books.");
+            }
         }
 
         // GET api/books/5
         [HttpGet("{id}")]
-        public IActionResult GetOne(int id)
+        public async Task<IActionResult> GetOne(int id)
         {
-            var book = DataStore.Books.FirstOrDefault(a => a.Id == id);
-            if (book == null)
+            try
             {
-                return NotFound();
+                Book book = await _booksRepository.GetById(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+                return Ok(book);
             }
-            return Ok(book);
+            catch (Exception ex)
+            {
+                return Problem("An error occured while fetching Book.");
+            }
         }
 
         // POST api/books
         [HttpPost]
-        public IActionResult Post(Book book)
+        public async Task<IActionResult> Post(Book book)
         {
-            // kreiranje knjige je moguće ako je izabran postojeći autor
-            var author = DataStore.Authors.FirstOrDefault(a => a.Id == book.AuthorId);
-            if (author == null)
+            try
             {
-                return BadRequest();
-            }
+                Author bookAuthor = await _authorsRepository.GetById(book.AuthorId);
+                if (bookAuthor == null)
+                {
+                    return BadRequest($"Author with ID {book.AuthorId} does not exist.");
+                }
 
-            // kreiranje knjige je moguće ako je izabran postojeći izdavač
-            var publisher = DataStore.Publishers.FirstOrDefault(a => a.Id == book.PublisherId);
-            if (publisher == null)
+                Publisher bookPublisher = await _publishersRepository.GetById(book.PublisherId);
+                if (bookPublisher == null)
+                {
+                    return BadRequest($"Publisher with ID {book.PublisherId} not exist.");
+                }
+
+                book.Author = bookAuthor;
+                book.Publisher = bookPublisher;
+                await _booksRepository.Create(book);
+                return Ok(book);
+            }
+            catch (Exception ex)
             {
-                return BadRequest();
+                return Problem("An error occured while creating Book.");
             }
-
-            book.Id = DataStore.GetNewBookId();
-            book.Author = author;
-            book.Publisher = publisher;
-            DataStore.Books.Add(book);
-            return Ok(book);
         }
 
         // PUT api/books/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, Book book)
+        public async Task<IActionResult> Put(int id, Book book)
         {
-            if (id != book.Id)
+            try
             {
-                return BadRequest();
-            }
+                Book existingBook = await _booksRepository.GetById(id);
+                if (existingBook == null)
+                {
+                    return NotFound($"The Book with ID {book.Id} not exist.");
+                }
 
-            var existingBook = DataStore.Books.FirstOrDefault(a => a.Id == id);
-            if (existingBook == null)
+                Author bookAuthor = await _authorsRepository.GetById(book.AuthorId);
+                if (bookAuthor == null)
+                {
+                    return NotFound($"Author with ID {book.AuthorId} does not exist.");
+                }
+
+                Publisher bookPublisher = await _publishersRepository.GetById(book.PublisherId);
+                if (bookPublisher == null)
+                {
+                    return NotFound($"Publisher with ID {book.PublisherId} not exist.");
+                }
+
+                existingBook.Title = book.Title;
+                existingBook.PageCount = book.PageCount;
+                existingBook.PublishedDate = book.PublishedDate;
+                existingBook.AuthorId = book.AuthorId;
+                existingBook.PublisherId = book.PublisherId;
+                existingBook.ISBN = book.ISBN;
+                existingBook.Author = bookAuthor;
+                existingBook.Publisher = bookPublisher;
+
+                Book updatedBook = await _booksRepository.Update(existingBook);
+                return Ok(updatedBook);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return Problem("An error occured while updating Book.");
             }
-
-            // izmena knjige je moguca ako je izabran postojeći autor
-            var author = DataStore.Authors.FirstOrDefault(a => a.Id == book.AuthorId);
-            if (author == null)
-            {
-                return BadRequest();
-            }
-
-            // izmena knjige je moguca ako je izabran postojeći izdavač
-            var publisher = DataStore.Publishers.FirstOrDefault(a => a.Id == book.PublisherId);
-            if (publisher == null)
-            {
-                return BadRequest();
-            }
-
-            int index = DataStore.Books.IndexOf(existingBook);
-            if (index == -1)
-            {
-                return NotFound();
-
-            }
-
-            book.Author = author;
-            book.Publisher = publisher;
-            DataStore.Books[index] = book;
-            return Ok(book);
         }
 
         // DELETE api/books/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var book = DataStore.Books.FirstOrDefault(a => a.Id == id);
-            if (book == null)
+            try
             {
-                return NotFound();
+                bool result = await _booksRepository.Delete(id);
+                if (!result)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-            DataStore.Books.Remove(book);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return Problem("An error occured while deleting Book.");
+            }
         }
     }
 }

@@ -97,6 +97,17 @@ namespace BookstoreApplication.Models
             new AuthorAwardRecord { Id = 15, AuthorId = 1, AwardId = 4, AwardedOn = new DateTime(2023, 6, 11, 0, 0, 0, DateTimeKind.Utc) }
                 );
 
+            modelBuilder.Entity<Book>()
+                .HasOne(book=>book.Author)
+                .WithMany()
+                .HasForeignKey(book=>book.AuthorId)
+                .OnDelete(DeleteBehavior.Cascade);  // kaskadno brisanje svih knjiga obrisanog autora
+
+            modelBuilder.Entity<Book>()
+                .HasOne(book=>book.Publisher)
+                .WithMany()
+                .HasForeignKey(book=>book.PublisherId)
+                .OnDelete(DeleteBehavior.Cascade);  // kaskadno brisanje svih knjiga obrisanog izdavača
         }
     }
 }
