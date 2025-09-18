@@ -17,10 +17,7 @@ namespace BookstoreApplication.Repositories
         {
             try
             {
-                return await _context.Award
-                        .Include(award => award.AuthorAwards)
-                        .ThenInclude(authorAwards => authorAwards.Author)
-                        .ToListAsync();
+                return await _context.Award.ToListAsync();
             }
             catch (Exception ex)
             {

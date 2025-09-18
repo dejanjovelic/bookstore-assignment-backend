@@ -32,7 +32,10 @@ namespace BookstoreApplication.Repositories
         {
             try
             {
-                return await _context.Books.FindAsync(id);
+                return await _context.Books
+                    .Include(book => book.Author)
+                    .Include(book => book.Publisher)
+                    .FirstOrDefaultAsync(book => book.Id == id);
             }
             catch (Exception ex)
             {
