@@ -12,7 +12,7 @@ namespace BookstoreApplication.Repositories
             this._context = context;
         }
 
-        public async Task<List<Author>> GetAll()
+        public async Task<List<Author>> GetAllAsync()
         {
             try
             {
@@ -27,7 +27,7 @@ namespace BookstoreApplication.Repositories
             ;
         }
 
-        public async Task<Author> GetById(int id)
+        public async Task<Author> GetByIdAsync(int id)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace BookstoreApplication.Repositories
             }
         }
 
-        public async Task<Author> Create(Author author)
+        public async Task<Author> CreateAsync(Author author)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace BookstoreApplication.Repositories
             }
         }
 
-        public async Task<Author> Update(Author author)
+        public async Task<Author> UpdateAsync(Author author)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace BookstoreApplication.Repositories
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {

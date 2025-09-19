@@ -10,22 +10,22 @@ namespace BookstoreApplication.Controllers
     [ApiController]
     public class AwardsController : ControllerBase
     {
-        private AwardsRepository _awardsRepository;
+        private readonly AwardsRepository _awardsRepository;
 
-        public AwardsController(AwardsRepository awardsRepository)
+        public AwardsController(BookstoreDbContext context)
         {
-            _awardsRepository = awardsRepository;
+            _awardsRepository = new AwardsRepository(context);
         }
 
 
 
         //api/awards
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                return Ok(await _awardsRepository.GetAll());
+                return Ok(await _awardsRepository.GetAllAsync());
             }
             catch (Exception)
             {
@@ -35,11 +35,11 @@ namespace BookstoreApplication.Controllers
 
         //api/awards/2
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             try
             {
-                Award award = await _awardsRepository.GetById(id);
+                Award award = await _awardsRepository.GetByIdAsync(id);
                 if (award == null)
                 {
                     return NotFound();
@@ -54,11 +54,11 @@ namespace BookstoreApplication.Controllers
 
         //api/awards
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Award award)
+        public async Task<IActionResult> CreateAsync([FromBody] Award award)
         {
             try
             {
-                Award newAward = await _awardsRepository.Create(award);
+                Award newAward = await _awardsRepository.CreateAsync(award);
                 return Ok(newAward);
             }
             catch (Exception)
@@ -69,11 +69,11 @@ namespace BookstoreApplication.Controllers
 
         //api/awards/2
         [HttpPut]
-        public async Task<IActionResult> Put(int id, [FromBody] Award award)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] Award award)
         {
             try
             {
-                Award existingAward = await _awardsRepository.GetById(id);
+                Award existingAward = await _awardsRepository.GetByIdAsync(id);
                 if (existingAward == null)
                 {
                     return NotFound();
@@ -83,7 +83,7 @@ namespace BookstoreApplication.Controllers
                 existingAward.Name = award.Name;
                 existingAward.Description = award.Description;
                 existingAward.AwardStartYear = award.AwardStartYear;
-                award = await _awardsRepository.Update(existingAward);
+                award = await _awardsRepository.UpdateAsync(existingAward);
                 return Ok(award);
             }
             catch (Exception)
@@ -94,11 +94,11 @@ namespace BookstoreApplication.Controllers
 
         //api/awards/2
         [HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
-                bool result = await _awardsRepository.Delete(id);
+                bool result = await _awardsRepository.DeleteAsync(id);
                 if (!result)
                 {
                     return NotFound();

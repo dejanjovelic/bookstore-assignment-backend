@@ -20,10 +20,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<BookstoreDbContext>(options => 
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<AuthorsRepository>();
-builder.Services.AddScoped<PublishersRepository>();
-builder.Services.AddScoped<BooksRepository>();
-builder.Services.AddScoped<AwardsRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

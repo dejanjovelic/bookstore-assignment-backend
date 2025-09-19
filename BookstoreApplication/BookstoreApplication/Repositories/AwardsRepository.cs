@@ -13,7 +13,7 @@ namespace BookstoreApplication.Repositories
             this._context = context;
         }
 
-        public async Task<List<Award>> GetAll()
+        public async Task<List<Award>> GetAllAsync()
         {
             try
             {
@@ -26,7 +26,7 @@ namespace BookstoreApplication.Repositories
             }
         }
 
-        public async Task<Award> GetById(int id)
+        public async Task<Award> GetByIdAsync(int id)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace BookstoreApplication.Repositories
             }
         }
 
-        public async Task<Award> Create(Award award)
+        public async Task<Award> CreateAsync(Award award)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace BookstoreApplication.Repositories
 
         }
 
-        public async Task<Award> Update(Award award)
+        public async Task<Award> UpdateAsync(Award award)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace BookstoreApplication.Repositories
             }
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             try
             {
