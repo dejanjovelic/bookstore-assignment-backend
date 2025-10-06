@@ -14,76 +14,30 @@ namespace BookstoreApplication.Repositories
 
         public async Task<List<Publisher>> GetAllAsync()
         {
-            try
-            {
-                return await _context.Publishers.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            return await _context.Publishers.ToListAsync();
         }
 
         public async Task<Publisher> GetByIdAsync(int id)
         {
-            try
-            {
-                return await _context.Publishers.FindAsync(id);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            return await _context.Publishers.FindAsync(id);
         }
 
         public async Task<Publisher> CreateAsync(Publisher publisher)
         {
-            try
-            {
-                _context.Publishers.Add(publisher);
-                await _context.SaveChangesAsync();
-                return publisher;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            _context.Publishers.Add(publisher);
+            await _context.SaveChangesAsync();
+            return publisher;
         }
         public async Task<Publisher> UpdateAsync(Publisher publisher)
         {
-            try
-            {
-                await _context.SaveChangesAsync();
-                return publisher;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            await _context.SaveChangesAsync();
+            return publisher;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(Publisher publisher)
         {
-            try
-            {
-                Publisher publisher = _context.Publishers.Find(id);
-                if (publisher != null)
-                {
-                    return false;
-                }
-                _context.Publishers.Remove(publisher);
-                await _context.SaveChangesAsync(true);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            _context.Publishers.Remove(publisher);
+            await _context.SaveChangesAsync(true);
         }
     }
 }

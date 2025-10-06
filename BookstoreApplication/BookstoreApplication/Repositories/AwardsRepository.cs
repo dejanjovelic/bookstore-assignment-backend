@@ -15,80 +15,32 @@ namespace BookstoreApplication.Repositories
 
         public async Task<List<Award>> GetAllAsync()
         {
-            try
-            {
-                return await _context.Award.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            return await _context.Award.ToListAsync();
         }
 
         public async Task<Award> GetByIdAsync(int id)
         {
-            try
-            {
-                return await _context.Award.FindAsync(id);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            return await _context.Award.FindAsync(id);
         }
 
         public async Task<Award> CreateAsync(Award award)
         {
-            try
-            {
                 _context.Award.Add(award);
                 await _context.SaveChangesAsync();
                 return award;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
-
         }
 
         public async Task<Award> UpdateAsync(Award award)
         {
-            try
-            {
-                _context.Update(award);
-                await _context.SaveChangesAsync();
-                return award;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            _context.Update(award);
+            await _context.SaveChangesAsync();
+            return award;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(Award award)
         {
-            try
-            {
-                Award award = await _context.Award.FindAsync(id);
-                if (award == null)
-                {
-                    return false;
-                }
-
-                _context.Award.Remove(award);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            _context.Award.Remove(award);
+            await _context.SaveChangesAsync();
         }
     }
 }

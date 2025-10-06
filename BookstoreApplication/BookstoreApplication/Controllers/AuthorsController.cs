@@ -1,6 +1,7 @@
 ﻿using BookstoreApplication.Data;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
+using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -13,11 +14,11 @@ namespace BookstoreApplication.Controllers
     public class AuthorsController : ControllerBase
     {
 
-        private AuthorsRepository _authorsRepository;
+        private readonly AuthorService _authorService;
 
         public AuthorsController(BookstoreDbContext context)
         {
-            this._authorsRepository = new AuthorsRepository(context);
+            this._authorService = new AuthorService(context);
         }
 
 
@@ -27,11 +28,11 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                return Ok(await _authorsRepository.GetAllAsync());
+                return Ok(await _authorService.GetAllAsync());
             }
             catch (Exception ex)
             {
-                return Problem($"An error occured while fetchting Authors.");
+                return Problem($"An error occured while fetching Authors.");
             }
         }
 
@@ -41,10 +42,10 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                var author = await _authorsRepository.GetByIdAsync(id);
+                var author = await _authorService.GetByIdAsync(id);
                 if (author == null)
                 {
-                    return NotFound();
+                    return NotFound($"Author with ID {id} not found.");
                 }
                 return Ok(author);
             }
@@ -60,8 +61,7 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Author addedAuthor = await _authorsRepository.CreateAsync(author);
-                return Ok(addedAuthor);
+                return Ok(await _authorService.CreateAsync(author));
             }
             catch (Exception ex)
             {
@@ -75,18 +75,19 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Author existingAuthor = await _authorsRepository.GetByIdAsync(author.Id);
+                if (author.Id != id) 
+                {
+                    return Problem($"Author ID mismatch: route ID {id} vs body ID {author.Id}");
+                }
+
+                Author existingAuthor = await _authorService.GetByIdAsync(author.Id);
                 if (existingAuthor == null)
                 {
                     return NotFound($"Author with ID {author.Id} not found.");
                 }
-                author.DateOfBirth = existingAuthor.DateOfBirth;
-                author.FullName = existingAuthor.FullName;
-                author.Biography = existingAuthor.Biography;
-                author.Id = id;
 
-                Author updatedAuthor = await _authorsRepository.UpdateAsync(existingAuthor);
-                return Ok(updatedAuthor);
+                return Ok(await _authorService.UpdateAsync(author, existingAuthor));
+
             }
             catch (Exception)
             {
@@ -100,12 +101,14 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                bool result = await _authorsRepository.DeleteAsync(id);
-                if (!result)
+                Author author = await _authorService.GetByIdAsync(id);
+                if (author == null)
                 {
-                    return NotFound();
+                    return NotFound($"Author with ID {id} not found.");
                 }
 
+                await _authorService.DeleteAsync(author);
+                
                 return NoContent();
             }
             catch (Exception)

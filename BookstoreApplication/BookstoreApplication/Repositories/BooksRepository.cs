@@ -12,86 +12,40 @@ namespace BookstoreApplication.Repositories
             _context = context;
         }
 
-        public async Task<List<Book>> GetAllAsync() 
+        public async Task<List<Book>> GetAllAsync()
         {
-            try
-            {
-                return await _context.Books
-                        .Include(book => book.Author)
-                        .Include(book => book.Publisher)
-                        .ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
-        }
-
-        public async Task<Book> GetByIdAsync(int id) 
-        {
-            try
-            {
-                return await _context.Books
+            return await _context.Books
                     .Include(book => book.Author)
                     .Include(book => book.Publisher)
-                    .FirstOrDefaultAsync(book => book.Id == id);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+                    .ToListAsync();
+        }
+
+        public async Task<Book> GetByIdAsync(int id)
+        {
+            return await _context.Books
+                .Include(book => book.Author)
+                .Include(book => book.Publisher)
+                .FirstOrDefaultAsync(book => book.Id == id);
         }
 
 
-        public async Task<Book> CreateAsync(Book book) 
+        public async Task<Book> CreateAsync(Book book)
         {
-            try
-            {
-                _context.Books.Add(book);
-                await _context.SaveChangesAsync();
-                return book;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }        
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+            return book;
         }
 
-        public async Task<Book> UpdateAsync(Book book) 
+        public async Task<Book> UpdateAsync(Book book)
         {
-            try
-            {
-                await _context.SaveChangesAsync();
-                return book;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            await _context.SaveChangesAsync();
+            return book;
         }
 
-        public async Task<bool> DeleteAsync(int id) 
+        public async Task DeleteAsync(Book book)
         {
-            try
-            {
-                Book book = await _context.Books.FindAsync(id);
-                if (book == null)
-                {
-                    return false;
-                }
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                throw;
-            }
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
         }
 
     }
