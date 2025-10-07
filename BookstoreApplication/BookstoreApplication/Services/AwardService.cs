@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookstoreApplication.Services
 {
-    public class AwardService
+    public class AwardService : IAwardService
     {
-        private readonly AwardsRepository _awardsRepository;
+        private readonly IAwardsRepository _awardsRepository;
 
-        public AwardService(BookstoreDbContext context)
+        public AwardService(IAwardsRepository awardsRepository)
         {
-            _awardsRepository = new AwardsRepository(context);
+            _awardsRepository = awardsRepository;
         }
 
         public async Task<List<Award>> GetAllAsync()
@@ -29,8 +29,14 @@ namespace BookstoreApplication.Services
             return await _awardsRepository.CreateAsync(award);
         }
 
-        public async Task<Award> UpdateAsync(Award award, Award existingAward)
+        public async Task<Award> UpdateAsync(Award award)
         {
+
+            Award existingAward = await GetByIdAsync(award.Id);
+            if (existingAward == null)
+            {
+                throw new ArgumentException($"Award with ID {award.Id} not found.");
+            }
             existingAward.Id = award.Id;
             existingAward.Name = award.Name;
             existingAward.Description = award.Description;
@@ -38,8 +44,13 @@ namespace BookstoreApplication.Services
             return await _awardsRepository.UpdateAsync(existingAward);
         }
 
-        public async Task DeleteAsync(Award award)
+        public async Task DeleteAsync(int id)
         {
+            Award award = await GetByIdAsync(id);
+            if (award == null)
+            {
+                throw new ArgumentException($"Award with ID {id} not found.");
+            }
             await _awardsRepository.DeleteAsync(award);
         }
     }

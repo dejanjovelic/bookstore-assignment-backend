@@ -14,11 +14,11 @@ namespace BookstoreApplication.Controllers
     [ApiController]
     public class PublishersController : ControllerBase
     {
-        private readonly PublisherService _publisherService;
+        private readonly IPublisherService _publisherService;
 
-        public PublishersController(BookstoreDbContext context)
+        public PublishersController(IPublisherService publisherService)
         {
-            this._publisherService = new PublisherService(context);
+            this._publisherService = publisherService;
         }
 
 
@@ -75,13 +75,17 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Publisher existingPublisher = await _publisherService.GetByIdAsync(id);
-                if (existingPublisher == null)
+                if (publisher.Id != id)
                 {
-                    return NotFound($"Publisher with ID {publisher.Id} not found.");
+                    return BadRequest($"Publisher ID mismatch: route ID:{id} body ID:{publisher.Id}.");
                 }
+               
 
-                return Ok(await _publisherService.UpdateAsync(existingPublisher, publisher));
+                return Ok(await _publisherService.UpdateAsync( publisher));
+            }
+            catch(ArgumentException ex)
+            { 
+                return NotFound(ex.Message); 
             }
             catch (Exception ex)
             {
@@ -95,14 +99,12 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Publisher publisher = await _publisherService.GetByIdAsync(id);
-                if (publisher == null)
-                {
-                    return NotFound($"Publisher with ID {publisher.Id} not found.");
-                }
-
-                await _publisherService.DeleteAsync(publisher);
+                await _publisherService.DeleteAsync(id);
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

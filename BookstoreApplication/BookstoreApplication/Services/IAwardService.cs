@@ -1,0 +1,13 @@
+﻿using BookstoreApplication.Models;
+
+namespace BookstoreApplication.Services
+{
+    public interface IAwardService
+    {
+        Task<List<Award>> GetAllAsync();
+        Task<Award> GetByIdAsync(int id);
+        Task<Award> CreateAsync(Award award);
+        Task<Award> UpdateAsync(Award award);
+        Task DeleteAsync(int id);
+    }
+}

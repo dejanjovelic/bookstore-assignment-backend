@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookstoreApplication.Services
 {
-    public class AuthorService
+    public class AuthorService : IAuthorService
     {
 
-        private readonly AuthorsRepository _authorsRepository;
+        private readonly IAuthorsRepository _authorsRepository;
 
-        public AuthorService(BookstoreDbContext context)
+        public AuthorService(IAuthorsRepository authorsRepository)
         {
-            _authorsRepository = new AuthorsRepository(context);
+            _authorsRepository = authorsRepository;
         }
 
         public async Task<List<Author>> GetAllAsync()
@@ -29,8 +29,14 @@ namespace BookstoreApplication.Services
             return await _authorsRepository.CreateAsync(author);
         }
 
-        public async Task<Author> UpdateAsync(Author author, Author existingAuthor)
+        public async Task<Author> UpdateAsync(Author author)
         {
+            Author existingAuthor = await GetByIdAsync(author.Id);
+            if (existingAuthor == null)
+            {
+                throw new ArgumentException($"Author with ID {author.Id} not found.");
+            }
+
             existingAuthor.DateOfBirth = author.DateOfBirth;
             existingAuthor.FullName = author.FullName;
             existingAuthor.Biography = author.Biography;
@@ -39,8 +45,13 @@ namespace BookstoreApplication.Services
             return await _authorsRepository.UpdateAsync(existingAuthor);
         }
 
-        public async Task DeleteAsync(Author author)
+        public async Task DeleteAsync(int id)
         {
+            Author author = await GetByIdAsync(id);
+            if (author == null)
+            {
+                throw new ArgumentException($"Author with ID {id} not found.");
+            }
             await _authorsRepository.DeleteAsync(author);
         }
     }

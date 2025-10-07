@@ -11,11 +11,11 @@ namespace BookstoreApplication.Controllers
     [ApiController]
     public class AwardsController : ControllerBase
     {
-        private readonly AwardService _awardService;
+        private readonly IAwardService _awardService;
 
-        public AwardsController(BookstoreDbContext context)
+        public AwardsController(IAwardService awardService)
         {
-            _awardService = new AwardService(context);
+            _awardService = awardService;
         }
 
 
@@ -73,13 +73,16 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Award existingAward = await _awardService.GetByIdAsync(id);
-                if (existingAward == null)
+                if (award.Id != id)
                 {
-                    return NotFound($"Award with ID {id} not found.");
+                    return BadRequest($"Award ID mismatch: route ID {id} vs body ID {award.Id}");
                 }
 
-                return Ok(await _awardService.UpdateAsync(award, existingAward));
+                return Ok(await _awardService.UpdateAsync(award));
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {
@@ -93,15 +96,12 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-
-                Award award = await _awardService.GetByIdAsync(id);
-                if (award == null)
-                {
-                    return NotFound($"Award with ID {id} not found.");
-                }
-
-                await _awardService.DeleteAsync(award);
+                await _awardService.DeleteAsync(id);
                 return NoContent();
+            }
+            catch(ArgumentException ex)
+            { 
+                return NotFound(ex.Message); 
             }
             catch (Exception)
             {

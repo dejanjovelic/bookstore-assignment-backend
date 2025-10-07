@@ -14,11 +14,11 @@ namespace BookstoreApplication.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly BookService _bookService;
+        private readonly IBookService _bookService;
 
-        public BooksController(BookstoreDbContext context)
+        public BooksController(IBookService bookService)
         {
-            this._bookService = new BookService(context);
+            this._bookService = bookService;
         }
 
 
@@ -61,20 +61,11 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Author bookAuthor = await _bookService.GetAuthorByIdAsync(book.AuthorId);
-                if (bookAuthor == null)
-                {
-                    return BadRequest($"Author with ID {book.AuthorId} does not exist.");
-                }
-
-                Publisher bookPublisher = await _bookService.GetPublisherByIdAsync(book.PublisherId);
-                if (bookPublisher == null)
-                {
-                    return BadRequest($"Publisher with ID {book.PublisherId} not exist.");
-                }
-
-                await _bookService.CreateAsync(bookAuthor,bookPublisher,book);
-                return Ok(book);
+                return Ok(await _bookService.CreateAsync(book));
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -88,26 +79,13 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Book existingBook = await _bookService.GetByIdAsync(id);
-                if (existingBook == null)
+                if (book.Id != id)
                 {
-                    return NotFound($"The Book with ID {book.Id} not exist.");
+                    return BadRequest($"Book ID mismatch: route ID {id} vs body ID {book.Id}");
                 }
 
-                Author bookAuthor = await _bookService.GetAuthorByIdAsync(book.AuthorId);
-                if (bookAuthor == null)
-                {
-                    return NotFound($"Author with ID {book.AuthorId} does not exist.");
-                }
+                return Ok(await _bookService.UpdateAsync(book));
 
-                Publisher bookPublisher = await _bookService.GetPublisherByIdAsync(book.PublisherId);
-                if (bookPublisher == null)
-                {
-                    return NotFound($"Publisher with ID {book.PublisherId} not exist.");
-                }
-
-                return Ok(await _bookService.UpdateAsync(existingBook, bookAuthor, bookPublisher, book));
-                
             }
             catch (Exception ex)
             {
@@ -121,14 +99,13 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Book book = await _bookService.GetByIdAsync(id);
-                if (book == null)
-                {
-                    return NotFound($"The Book with ID {book.Id} not exist.");
-                }
 
-                await _bookService.DeleteAsync(book);
+                await _bookService.DeleteAsync(id);
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

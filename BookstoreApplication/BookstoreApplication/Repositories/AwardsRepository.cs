@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BookstoreApplication.Repositories
 {
-    public class AwardsRepository
+    public class AwardsRepository : IAwardsRepository
     {
         private BookstoreDbContext _context;
         public AwardsRepository(BookstoreDbContext context)

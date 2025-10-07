@@ -14,11 +14,11 @@ namespace BookstoreApplication.Controllers
     public class AuthorsController : ControllerBase
     {
 
-        private readonly AuthorService _authorService;
+        private readonly IAuthorService _authorService;
 
-        public AuthorsController(BookstoreDbContext context)
+        public AuthorsController(IAuthorService authorService)
         {
-            this._authorService = new AuthorService(context);
+            this._authorService = authorService;
         }
 
 
@@ -38,7 +38,7 @@ namespace BookstoreApplication.Controllers
 
         // GET api/authors/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOneAsync(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             try
             {
@@ -77,17 +77,16 @@ namespace BookstoreApplication.Controllers
             {
                 if (author.Id != id) 
                 {
-                    return Problem($"Author ID mismatch: route ID {id} vs body ID {author.Id}");
+                    return BadRequest($"Author ID mismatch: route ID {id} vs body ID {author.Id}");
                 }
 
-                Author existingAuthor = await _authorService.GetByIdAsync(author.Id);
-                if (existingAuthor == null)
-                {
-                    return NotFound($"Author with ID {author.Id} not found.");
-                }
+                
+                return Ok(await _authorService.UpdateAsync(author));
 
-                return Ok(await _authorService.UpdateAsync(author, existingAuthor));
-
+            }
+            catch (ArgumentException ex)
+            { 
+                return NotFound(ex.Message); 
             }
             catch (Exception)
             {
@@ -101,15 +100,13 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Author author = await _authorService.GetByIdAsync(id);
-                if (author == null)
-                {
-                    return NotFound($"Author with ID {id} not found.");
-                }
-
-                await _authorService.DeleteAsync(author);
+                await _authorService.DeleteAsync(id);
                 
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception)
             {

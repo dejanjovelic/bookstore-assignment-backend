@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookstoreApplication.Services
 {
-    public class PublisherService
+    public class PublisherService : IPublisherService
     {
         private readonly PublishersRepository _publishersRepository;
 
@@ -29,8 +29,13 @@ namespace BookstoreApplication.Services
 
         }
 
-        public async Task<Publisher> UpdateAsync(Publisher existingPublisher, Publisher publisher)
+        public async Task<Publisher> UpdateAsync(Publisher publisher)
         {
+            Publisher existingPublisher = await GetByIdAsync(publisher.Id);
+            if (existingPublisher == null)
+            {
+                throw new ArgumentException($"Publisher with ID {publisher.Id} not found.");
+            }
             existingPublisher.Name = publisher.Name;
             existingPublisher.Adress = publisher.Adress;
             existingPublisher.Website = publisher.Website;
@@ -39,8 +44,14 @@ namespace BookstoreApplication.Services
             return await _publishersRepository.UpdateAsync(existingPublisher);
         }
 
-        public async Task DeleteAsync(Publisher publisher)
+        public async Task DeleteAsync(int id)
         {
+            Publisher publisher = await GetByIdAsync(id);
+            if (publisher == null)
+            {
+                throw new ArgumentException($"Publisher with ID {id} not found.");
+            }
+
             await _publishersRepository.DeleteAsync(publisher);
         }
 
