@@ -8,34 +8,41 @@ namespace BookstoreApplication.Services
     public class PublisherService : IPublisherService
     {
         private readonly PublishersRepository _publishersRepository;
+        private readonly ILogger<PublisherService> _logger;
 
-        public PublisherService(BookstoreDbContext context)
+        public PublisherService(BookstoreDbContext context, ILogger<PublisherService> logger)
         {
             _publishersRepository = new PublishersRepository(context);
+            _logger = logger;
         }
 
         public async Task<List<Publisher>> GetAllAsync()
         {
+            _logger.LogInformation($"Geting all publishers.");
             return await _publishersRepository.GetAllAsync();
         }
 
         public async Task<Publisher> GetByIdAsync(int id)
         {
+            _logger.LogInformation($"Get publisher with id {id}.");
             Publisher publisher = await _publishersRepository.GetByIdAsync(id);
             if (publisher == null)
             {
                 throw new NotFoundException($"Publisher with ID {id} not found.");
             }
+            _logger.LogInformation($"The publisher with Id: {id} exists.");
             return publisher;
         }
 
         public async Task<Publisher> CreateAsync(Publisher publisher)
         {
+            _logger.LogInformation($"Created publisher Id:{publisher.Id}");
             return await _publishersRepository.CreateAsync(publisher);
         }
 
         public async Task<Publisher> UpdateAsync(int id, Publisher publisher)
         {
+            _logger.LogInformation($"Updating publisher with ID: {id}");
             if (publisher.Id != id)
             {
                 throw new BadRequestException($"Publisher ID mismatch: route ID:{id} body ID:{publisher.Id}.");
@@ -51,17 +58,20 @@ namespace BookstoreApplication.Services
             existingPublisher.Website = publisher.Website;
             publisher.Id = publisher.Id;
 
+            _logger.LogInformation($"Publisher with ID: {id} updated. ");
             return await _publishersRepository.UpdateAsync(existingPublisher);
         }
 
         public async Task DeleteAsync(int id)
         {
+            _logger.LogInformation($"Deleting publisher with ID: {id}");
             Publisher publisher = await GetByIdAsync(id);
             if (publisher == null)
             {
                 throw new NotFoundException($"Publisher with ID {id} not found.");
             }
 
+            _logger.LogInformation($"Publisher with ID: {publisher.Id} deleted");
             await _publishersRepository.DeleteAsync(publisher);
         }
 

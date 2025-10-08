@@ -9,34 +9,41 @@ namespace BookstoreApplication.Services
     {
 
         private readonly IAuthorsRepository _authorsRepository;
+        private readonly ILogger<AuthorService> _logger;
 
-        public AuthorService(IAuthorsRepository authorsRepository)
+        public AuthorService(IAuthorsRepository authorsRepository, ILogger<AuthorService> logger)
         {
-            _authorsRepository = authorsRepository;
+            this._authorsRepository = authorsRepository;
+            this._logger = logger;
         }
 
         public async Task<List<Author>> GetAllAsync()
         {
+            _logger.LogInformation($"Geting all authors.");
             return await _authorsRepository.GetAllAsync();
         }
 
         public async Task<Author> GetByIdAsync(int id)
         {
+            _logger.LogInformation($"Get author with id {id}.");
             Author  author = await _authorsRepository.GetByIdAsync(id);
             if (author == null)
             {
                 throw new NotFoundException($"Author with ID {id} not found.");
             }
+            _logger.LogInformation($"The author with Id: {id} exists.");
             return author;
         }
 
         public async Task<Author> CreateAsync(Author author)
         {
+            _logger.LogInformation($"Created Author Id:{author.Id}");
             return await _authorsRepository.CreateAsync(author);
         }
 
         public async Task<Author> UpdateAsync(int id, Author author)
         {
+            _logger.LogInformation($"Updating author with ID: {id}");
             if (author.Id != id)
             {
                throw new BadRequestException($"Author ID mismatch: route ID {id} vs body ID {author.Id}");
@@ -53,16 +60,19 @@ namespace BookstoreApplication.Services
             existingAuthor.Biography = author.Biography;
             existingAuthor.Id = author.Id;
 
+            _logger.LogInformation($"Author with ID: {id} updated. ");
             return await _authorsRepository.UpdateAsync(existingAuthor);
         }
 
         public async Task DeleteAsync(int id)
         {
+            _logger.LogInformation($"Deleting author with ID: {id}");
             Author author = await GetByIdAsync(id);
             if (author == null)
             {
                 throw new NotFoundException($"Author with ID {id} not found.");
             }
+            _logger.LogInformation($"Author with ID: {author.Id} deleted");
             await _authorsRepository.DeleteAsync(author);
         }
     }
