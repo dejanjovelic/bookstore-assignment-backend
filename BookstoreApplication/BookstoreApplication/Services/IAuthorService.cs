@@ -6,7 +6,7 @@ namespace BookstoreApplication.Services
     {
         Task<List<Author>> GetAllAsync();
         Task<Author> CreateAsync(Author author);
-        Task<Author> UpdateAsync(Author author);
+        Task<Author> UpdateAsync(int id, Author author);
         Task DeleteAsync(int id);
     }
 }

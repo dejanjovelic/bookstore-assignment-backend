@@ -19,95 +19,40 @@ namespace BookstoreApplication.Controllers
         }
 
 
-
         //api/awards
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            try
-            {
-                return Ok(await _awardService.GetAllAsync());
-            }
-            catch (Exception)
-            {
-                return Problem("An error occured while fetching awards.");
-            }
+            return Ok(await _awardService.GetAllAsync());
         }
 
         //api/awards/2
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            try
-            {
-                Award award = await _awardService.GetByIdAsync(id);
-                if (award == null)
-                {
-                    return NotFound();
-                }
-                return Ok(award);
-            }
-            catch (Exception)
-            {
-                return Problem("An error occured while fetching award.");
-            }
+            return Ok(await _awardService.GetByIdAsync(id));
         }
 
         //api/awards
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] Award award)
         {
-            try
-            {
-                return Ok(await _awardService.CreateAsync(award));
-            }
-            catch (Exception)
-            {
-                return Problem("An error occured while creating award.");
-            }
+            return Ok(await _awardService.CreateAsync(award));
         }
 
         //api/awards/2
         [HttpPut]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] Award award)
         {
-            try
-            {
-                if (award.Id != id)
-                {
-                    return BadRequest($"Award ID mismatch: route ID {id} vs body ID {award.Id}");
-                }
-
-                return Ok(await _awardService.UpdateAsync(award));
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception)
-            {
-                return Problem("An error occured while updating award.");
-            }
+            return Ok(await _awardService.UpdateAsync(id, award));
         }
 
         //api/awards/2
         [HttpDelete]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            try
-            {
-                await _awardService.DeleteAsync(id);
-                return NoContent();
-            }
-            catch(ArgumentException ex)
-            { 
-                return NotFound(ex.Message); 
-            }
-            catch (Exception)
-            {
-                return Problem("An error occured while deleting award.");
-            }
+            await _awardService.DeleteAsync(id);
+            return NoContent();
         }
-
     }
 }

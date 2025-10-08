@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
@@ -34,7 +35,7 @@ namespace BookstoreApplication.Services
             Book book = await _bookRepository.GetByIdAsync(id);
             if (book == null)
             {
-                throw new ArgumentException($"The Book with ID {id} not exist.");
+                throw new NotFoundException($"The Book with ID {id} not exist.");
             }
             return _mapper.Map<BookDetailsDto>(book);
         }
@@ -44,13 +45,13 @@ namespace BookstoreApplication.Services
             Author bookAuthor = await GetAuthorByIdAsync(book.AuthorId);
             if (bookAuthor == null)
             {
-                throw new ArgumentException($"Author with ID {book.AuthorId} does not exist.");
+                throw new NotFoundException($"Author with ID {book.AuthorId} does not exist.");
             }
 
             Publisher bookPublisher = await GetPublisherByIdAsync(book.PublisherId);
             if (bookPublisher == null)
             {
-                throw new ArgumentException($"Publisher with ID {book.PublisherId} not exist.");
+                throw new NotFoundException($"Publisher with ID {book.PublisherId} not exist.");
             }
 
             book.Author = bookAuthor;
@@ -68,24 +69,29 @@ namespace BookstoreApplication.Services
             return await _publisherReadService.GetByIdAsync(id);
         }
 
-        public async Task<Book> UpdateAsync(Book book)
+        public async Task<Book> UpdateAsync(int id, Book book)
         {
+            if (book.Id != id)
+            {
+                throw new BadRequestException($"Book ID mismatch: route ID {id} vs body ID {book.Id}");
+            }
+
             Book existingBook = await _bookRepository.GetByIdAsync(book.Id);
             if (existingBook == null)
             {
-                throw new ArgumentException($"The Book with ID {book.Id} not exist.");
+                throw new NotFoundException($"The Book with ID {book.Id} not exist.");
             }
 
             Author bookAuthor = await GetAuthorByIdAsync(book.AuthorId);
             if (bookAuthor == null)
             {
-                throw new ArgumentException($"Author with ID {book.AuthorId} does not exist.");
+                throw new NotFoundException($"Author with ID {book.AuthorId} does not exist.");
             }
 
             Publisher bookPublisher = await GetPublisherByIdAsync(book.PublisherId);
             if (bookPublisher == null)
             {
-                throw new ArgumentException($"Publisher with ID {book.PublisherId} not exist.");
+                throw new NotFoundException($"Publisher with ID {book.PublisherId} not exist.");
             }
 
             existingBook.Title = book.Title;
@@ -105,7 +111,7 @@ namespace BookstoreApplication.Services
             Book book = await _bookRepository.GetByIdAsync(id);
             if (book == null)
             {
-                throw new ArgumentException($"The Book with ID {book.Id} not exist.");
+                throw new NotFoundException($"The Book with ID {id} not exist.");
             }
             await _bookRepository.DeleteAsync(book);
         }

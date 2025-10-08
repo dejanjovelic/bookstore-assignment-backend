@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,10 +19,14 @@ namespace BookstoreApplication.Services
             return await _awardsRepository.GetAllAsync();
         }
 
-        [HttpGet("{id}")]
         public async Task<Award> GetByIdAsync(int id)
         {
-            return await _awardsRepository.GetByIdAsync(id);
+            Award award = await _awardsRepository.GetByIdAsync(id);
+            if (award == null)
+            {
+                throw new NotFoundException($"Award with ID {id} not found.");
+            }
+            return award;
         }
 
         public async Task<Award> CreateAsync(Award award)
@@ -29,13 +34,17 @@ namespace BookstoreApplication.Services
             return await _awardsRepository.CreateAsync(award);
         }
 
-        public async Task<Award> UpdateAsync(Award award)
+        public async Task<Award> UpdateAsync(int id, Award award)
         {
+            if (award.Id != id)
+            {
+                throw new BadRequestException($"Award ID mismatch: route ID {id} vs body ID {award.Id}");
+            }
 
             Award existingAward = await GetByIdAsync(award.Id);
             if (existingAward == null)
             {
-                throw new ArgumentException($"Award with ID {award.Id} not found.");
+                throw new NotFoundException($"Award with ID {award.Id} not found.");
             }
             existingAward.Id = award.Id;
             existingAward.Name = award.Name;
@@ -49,7 +58,7 @@ namespace BookstoreApplication.Services
             Award award = await GetByIdAsync(id);
             if (award == null)
             {
-                throw new ArgumentException($"Award with ID {id} not found.");
+                throw new NotFoundException($"Award with ID {id} not found.");
             }
             await _awardsRepository.DeleteAsync(award);
         }

@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,21 +21,30 @@ namespace BookstoreApplication.Services
 
         public async Task<Publisher> GetByIdAsync(int id)
         {
-            return await _publishersRepository.GetByIdAsync(id);
+            Publisher publisher = await _publishersRepository.GetByIdAsync(id);
+            if (publisher == null)
+            {
+                throw new NotFoundException($"Publisher with ID {id} not found.");
+            }
+            return publisher;
         }
 
         public async Task<Publisher> CreateAsync(Publisher publisher)
         {
             return await _publishersRepository.CreateAsync(publisher);
-
         }
 
-        public async Task<Publisher> UpdateAsync(Publisher publisher)
+        public async Task<Publisher> UpdateAsync(int id, Publisher publisher)
         {
+            if (publisher.Id != id)
+            {
+                throw new BadRequestException($"Publisher ID mismatch: route ID:{id} body ID:{publisher.Id}.");
+            }
+
             Publisher existingPublisher = await GetByIdAsync(publisher.Id);
             if (existingPublisher == null)
             {
-                throw new ArgumentException($"Publisher with ID {publisher.Id} not found.");
+                throw new NotFoundException($"Publisher with ID {publisher.Id} not found.");
             }
             existingPublisher.Name = publisher.Name;
             existingPublisher.Adress = publisher.Adress;
@@ -49,7 +59,7 @@ namespace BookstoreApplication.Services
             Publisher publisher = await GetByIdAsync(id);
             if (publisher == null)
             {
-                throw new ArgumentException($"Publisher with ID {id} not found.");
+                throw new NotFoundException($"Publisher with ID {id} not found.");
             }
 
             await _publishersRepository.DeleteAsync(publisher);

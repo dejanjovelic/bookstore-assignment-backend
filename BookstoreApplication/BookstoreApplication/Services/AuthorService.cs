@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,12 @@ namespace BookstoreApplication.Services
 
         public async Task<Author> GetByIdAsync(int id)
         {
-            return await _authorsRepository.GetByIdAsync(id);
+            Author  author = await _authorsRepository.GetByIdAsync(id);
+            if (author == null)
+            {
+                throw new NotFoundException($"Author with ID {id} not found.");
+            }
+            return author;
         }
 
         public async Task<Author> CreateAsync(Author author)
@@ -29,12 +35,17 @@ namespace BookstoreApplication.Services
             return await _authorsRepository.CreateAsync(author);
         }
 
-        public async Task<Author> UpdateAsync(Author author)
+        public async Task<Author> UpdateAsync(int id, Author author)
         {
-            Author existingAuthor = await GetByIdAsync(author.Id);
+            if (author.Id != id)
+            {
+               throw new BadRequestException($"Author ID mismatch: route ID {id} vs body ID {author.Id}");
+            }
+
+            Author existingAuthor = await _authorsRepository.GetByIdAsync(author.Id);
             if (existingAuthor == null)
             {
-                throw new ArgumentException($"Author with ID {author.Id} not found.");
+                throw new NotFoundException($"Author with ID {author.Id} not found.");
             }
 
             existingAuthor.DateOfBirth = author.DateOfBirth;
@@ -50,7 +61,7 @@ namespace BookstoreApplication.Services
             Author author = await GetByIdAsync(id);
             if (author == null)
             {
-                throw new ArgumentException($"Author with ID {id} not found.");
+                throw new NotFoundException($"Author with ID {id} not found.");
             }
             await _authorsRepository.DeleteAsync(author);
         }

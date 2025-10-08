@@ -2,6 +2,7 @@ using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
 using BookstoreApplication.Settings;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
 
@@ -35,6 +36,8 @@ builder.Services.AddAutoMapper(cfg =>                                           
 cfg.AddProfile<BookProfile>()
 );
 
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();                            //Dodavanje Middleware
+
 
 builder.Services.AddDbContext<BookstoreDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -54,6 +57,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();                                               //Naredba da se Middleware koristi.
 
 app.UseAuthorization();
 

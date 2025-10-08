@@ -27,90 +27,36 @@ namespace BookstoreApplication.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            try
-            {
-                return Ok(await _bookService.GetAllAsync());
-            }
-            catch (Exception ex)
-            {
-                return Problem("An error occured while fetching Books.");
-            }
+            return Ok(await _bookService.GetAllAsync());
         }
 
         // GET api/books/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOneAsync(int id)
         {
-            try
-            {
-                return Ok(await _bookService.GetByIdAsync(id));
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return Problem("An error occured while fetching Book.");
-            }
+            return Ok(await _bookService.GetByIdAsync(id));
         }
 
         // POST api/books
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Book book)
         {
-            try
-            {
-                return Ok(await _bookService.CreateAsync(book));
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return Problem("An error occured while creating Book.");
-            }
+            return Ok(await _bookService.CreateAsync(book));
         }
 
         // PUT api/books/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, Book book)
         {
-            try
-            {
-                if (book.Id != id)
-                {
-                    return BadRequest($"Book ID mismatch: route ID {id} vs body ID {book.Id}");
-                }
-
-                return Ok(await _bookService.UpdateAsync(book));
-
-            }
-            catch (Exception ex)
-            {
-                return Problem("An error occured while updating Book.");
-            }
+            return Ok(await _bookService.UpdateAsync(id, book));
         }
 
         // DELETE api/books/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            try
-            {
-
-                await _bookService.DeleteAsync(id);
-                return NoContent();
-            }
-            catch (ArgumentException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return Problem("An error occured while deleting Book.");
-            }
+            await _bookService.DeleteAsync(id);
+            return NoContent();
         }
     }
 }
