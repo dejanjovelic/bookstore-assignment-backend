@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Data;
+using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
@@ -42,12 +43,11 @@ namespace BookstoreApplication.Controllers
         {
             try
             {
-                Book book = await _bookService.GetByIdAsync(id);
-                if (book == null)
-                {
-                    return NotFound($"The Book with ID {id} not exist.");
-                }
-                return Ok(book);
+                return Ok(await _bookService.GetByIdAsync(id));
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

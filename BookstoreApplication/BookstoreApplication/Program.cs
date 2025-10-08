@@ -1,6 +1,7 @@
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
+using BookstoreApplication.Settings;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
 
@@ -29,7 +30,13 @@ builder.Services.AddScoped<IPublisherReadService, PublisherService>();
 builder.Services.AddScoped<IPublishersRepository, PublishersRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
-builder.Services.AddDbContext<BookstoreDbContext>(options => 
+
+builder.Services.AddAutoMapper(cfg =>                                                   //Dodavanje AutoMapera
+cfg.AddProfile<BookProfile>()
+);
+
+
+builder.Services.AddDbContext<BookstoreDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 

@@ -1,4 +1,6 @@
-﻿using BookstoreApplication.Models;
+﻿using AutoMapper;
+using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,25 +8,35 @@ namespace BookstoreApplication.Services
 {
     public class BookService : IBookService
     {
-        private IBooksRepository _bookRepository;
-        private IPublisherReadService _publisherReadService;
-        private IAuthorReadService _authorReadService;
+        private readonly IBooksRepository _bookRepository;
+        private readonly IPublisherReadService _publisherReadService;
+        private readonly IAuthorReadService _authorReadService;
+        private readonly IMapper _mapper;
 
-        public BookService(IBooksRepository booksRepository, IAuthorReadService authorReadService, IPublisherReadService publisherReadService)
+        public BookService(IBooksRepository booksRepository, IAuthorReadService authorReadService, IPublisherReadService publisherReadService, IMapper mapper)
         {
             this._bookRepository = booksRepository;
             this._authorReadService = authorReadService;
             this._publisherReadService = publisherReadService;
+            this._mapper = mapper;
         }
 
-        public async Task<List<Book>> GetAllAsync()
+        public async Task<List<BookDto>> GetAllAsync()
         {
-            return await _bookRepository.GetAllAsync();
+            List<Book> books = await _bookRepository.GetAllAsync();
+            return books
+                .Select(_mapper.Map<BookDto>)
+                .ToList();
         }
 
-        public async Task<Book> GetByIdAsync(int id)
+        public async Task<BookDetailsDto> GetByIdAsync(int id)
         {
-            return await _bookRepository.GetByIdAsync(id);
+            Book book = await _bookRepository.GetByIdAsync(id);
+            if (book == null)
+            {
+                throw new ArgumentException($"The Book with ID {id} not exist.");
+            }
+            return _mapper.Map<BookDetailsDto>(book);
         }
 
         public async Task<Book> CreateAsync(Book book)
@@ -56,9 +68,9 @@ namespace BookstoreApplication.Services
             return await _publisherReadService.GetByIdAsync(id);
         }
 
-        public async Task<Book> UpdateAsync( Book book)
+        public async Task<Book> UpdateAsync(Book book)
         {
-            Book existingBook = await GetByIdAsync(book.Id);
+            Book existingBook = await _bookRepository.GetByIdAsync(book.Id);
             if (existingBook == null)
             {
                 throw new ArgumentException($"The Book with ID {book.Id} not exist.");
@@ -90,7 +102,7 @@ namespace BookstoreApplication.Services
 
         public async Task DeleteAsync(int id)
         {
-            Book book = await GetByIdAsync(id);
+            Book book = await _bookRepository.GetByIdAsync(id);
             if (book == null)
             {
                 throw new ArgumentException($"The Book with ID {book.Id} not exist.");
