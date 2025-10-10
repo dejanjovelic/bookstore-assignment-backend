@@ -2,6 +2,7 @@
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -57,6 +58,13 @@ namespace BookstoreApplication.Controllers
         {
             await _authorService.DeleteAsync(id);
             return NoContent();
+        }
+
+        // GET api/authors/paging?page=1&&rowsPerPage
+        [HttpGet("paging")]
+        public async Task<IActionResult> GetAllAuthorsPaginatedAsync([FromQuery] int page, [FromQuery] int pageSize)
+        {
+            return Ok(await _authorService.GetAllAuthorsPaginatedAsync(page, pageSize));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using BookstoreApplication.Models;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
 
 namespace BookstoreApplication.Services
 {
@@ -8,5 +9,6 @@ namespace BookstoreApplication.Services
         Task<Author> CreateAsync(Author author);
         Task<Author> UpdateAsync(int id, Author author);
         Task DeleteAsync(int id);
+        Task<PaginatedListDto<Author>> GetAllAuthorsPaginatedAsync(int page, int pageSize);
     }
 }

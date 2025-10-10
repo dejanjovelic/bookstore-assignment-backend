@@ -2,6 +2,7 @@
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using BookstoreApplication.DTO;
 
 namespace BookstoreApplication.Services
 {
@@ -74,6 +75,19 @@ namespace BookstoreApplication.Services
             }
             _logger.LogInformation($"Author with ID: {author.Id} deleted");
             await _authorsRepository.DeleteAsync(author);
+        }
+        public async Task<PaginatedListDto<Author>> GetAllAuthorsPaginatedAsync(int page, int pageSize) 
+        {
+            if (page < 1)
+            {
+                throw new BadRequestException("Page must be greather than 0.");
+            }
+            if (pageSize < 1)
+            {
+                throw new BadRequestException("The value must be a positive integer greater than zero.");
+            }
+            PaginatedListDto<Author> paginatedListAutors = await _authorsRepository.GetAllAuthorsPaginatedAsync(page, pageSize);
+            return paginatedListAutors;
         }
     }
 }
