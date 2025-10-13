@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +38,10 @@ namespace BookstoreApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] Award award)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
             return Ok(await _awardService.CreateAsync(award));
         }
 
@@ -44,6 +49,10 @@ namespace BookstoreApplication.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] Award award)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
             return Ok(await _awardService.UpdateAsync(id, award));
         }
 

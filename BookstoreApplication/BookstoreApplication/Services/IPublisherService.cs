@@ -1,4 +1,6 @@
-﻿using BookstoreApplication.Models;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookstoreApplication.Services
 {
@@ -8,5 +10,7 @@ namespace BookstoreApplication.Services
         Task<Publisher> CreateAsync(Publisher publisher);
         Task<Publisher> UpdateAsync(int id, Publisher publisher);
         Task DeleteAsync(int id);
+        List<PublisherSortTypeOptionDto> GetAllSortTypes();
+        Task<IEnumerable<Publisher>> GetSortedPublishers(int sortType);
     }
 }

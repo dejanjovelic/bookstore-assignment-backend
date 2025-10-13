@@ -1,4 +1,6 @@
 ﻿using BookstoreApplication.Data;
+using BookstoreApplication.DTO;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
@@ -40,6 +42,11 @@ namespace BookstoreApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Publisher publisher)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
+
             return Ok(await _publisherService.CreateAsync(publisher));
         }
 
@@ -47,6 +54,11 @@ namespace BookstoreApplication.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, Publisher publisher)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
+
             return Ok(await _publisherService.UpdateAsync(id, publisher));
         }
 
@@ -56,6 +68,19 @@ namespace BookstoreApplication.Controllers
         {
             await _publisherService.DeleteAsync(id);
             return NoContent();
+        }
+
+
+        [HttpGet("sortTypes")]
+        public ActionResult<List<PublisherSortTypeOptionDto>> GetAllSortTypes()
+        {
+            return _publisherService.GetAllSortTypes();
+        }
+
+        [HttpGet("sort")]
+        public async Task<IEnumerable<Publisher>> GetSortedPublishers([FromQuery] int sortType = (int)PublisherSortType.NAME_ASCENDING)
+        {
+            return await _publisherService.GetSortedPublishers(sortType);
         }
     }
 }

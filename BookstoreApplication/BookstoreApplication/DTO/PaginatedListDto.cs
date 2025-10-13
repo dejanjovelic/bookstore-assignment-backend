@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookstoreApplication.DTO
 {

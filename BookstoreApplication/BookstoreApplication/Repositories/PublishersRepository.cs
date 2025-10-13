@@ -1,4 +1,5 @@
-﻿using BookstoreApplication.Models;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Repositories
@@ -38,6 +39,25 @@ namespace BookstoreApplication.Repositories
         {
             _context.Publishers.Remove(publisher);
             await _context.SaveChangesAsync(true);
+        }
+        public async Task<IEnumerable<Publisher>> GetSortedPublishers(int sortType)
+        {
+            IQueryable<Publisher> publishers = _context.Publishers;
+
+            publishers = SortPublishers(publishers, sortType);
+            return await publishers.ToListAsync();
+        }
+
+        private static IQueryable<Publisher> SortPublishers(IQueryable<Publisher> publishers, int sortType)
+        {
+            return sortType switch
+            {
+                (int)PublisherSortType.NAME_ASCENDING => publishers.OrderBy(publisher => publisher.Name),
+                (int)PublisherSortType.NAME_DESCENDING => publishers.OrderByDescending(publisher => publisher.Name),
+                (int)PublisherSortType.ADDRESS_ASCENDING => publishers.OrderBy(publisher=>publisher.Adress),
+                (int)PublisherSortType.ADDRESS_DESCENDING=>publishers.OrderByDescending(publisher=>publisher.Adress),
+                _=>publishers.OrderBy(publisher => publisher.Name),
+            };
         }
     }
 }

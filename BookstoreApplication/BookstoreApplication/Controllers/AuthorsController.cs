@@ -1,5 +1,6 @@
 ﻿using BookstoreApplication.Data;
 using BookstoreApplication.Models;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -41,6 +42,10 @@ namespace BookstoreApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Author author)
         {
+            if (!ModelState.IsValid) 
+            {
+                throw new BadHttpRequestException("Invalid data.");
+            }
             return Ok(await _authorService.CreateAsync(author));
         }
 
@@ -48,8 +53,11 @@ namespace BookstoreApplication.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, Author author)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
             return Ok(await _authorService.UpdateAsync(id, author));
-
         }
 
         // DELETE api/authors/5

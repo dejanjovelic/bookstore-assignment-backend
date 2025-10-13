@@ -6,6 +6,7 @@ using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using BookstoreApplication.Exceptions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -41,6 +42,11 @@ namespace BookstoreApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Book book)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
+
             return Ok(await _bookService.CreateAsync(book));
         }
 
@@ -48,6 +54,11 @@ namespace BookstoreApplication.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, Book book)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new BadRequestException("Invalid data.");
+            }
+
             return Ok(await _bookService.UpdateAsync(id, book));
         }
 
