@@ -1,5 +1,6 @@
 ﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
+using BookstoreApplication.Models.IRepositoies;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Repositories

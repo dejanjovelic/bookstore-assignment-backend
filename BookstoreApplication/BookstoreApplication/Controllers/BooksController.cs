@@ -2,11 +2,11 @@
 using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 using BookstoreApplication.Repositories;
-using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using BookstoreApplication.Exceptions;
+using BookstoreApplication.Services.IServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -68,6 +68,20 @@ namespace BookstoreApplication.Controllers
         {
             await _bookService.DeleteAsync(id);
             return NoContent();
+        }
+
+        // GET/api/books/sortTypes
+        [HttpGet("sortTypes")]
+        public IActionResult GetAllBookSortTypes()
+        {
+            return Ok(_bookService.GetAllSortTypes());
+        }
+
+        // GET/api/books/sort
+        [HttpGet("sort")]
+        public async Task<IActionResult> GetSortedBooksAsync([FromQuery] int sortType=(int)BookSortType.BOOK_TITLE_ASC)
+        {
+            return Ok(await _bookService.GetSortedBooksAsync(sortType));
         }
     }
 }

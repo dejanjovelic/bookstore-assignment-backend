@@ -1,5 +1,8 @@
-﻿using BookstoreApplication.Models;
+﻿using BookstoreApplication.DTO;
+using BookstoreApplication.Models;
+using BookstoreApplication.Models.IRepositoies;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 
 namespace BookstoreApplication.Repositories
 {
@@ -48,5 +51,11 @@ namespace BookstoreApplication.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public IQueryable<Book> GetBaseBooks()
+        {
+            return _context.Books
+                 .Include(book => book.Author)
+                 .Include(book => book.Publisher);
+        }
     }
 }

@@ -2,6 +2,8 @@
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using BookstoreApplication.Models.IRepositoies;
+using BookstoreApplication.Services.IServices;
 
 namespace BookstoreApplication.Services
 {

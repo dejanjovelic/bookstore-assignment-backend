@@ -1,6 +1,6 @@
 ﻿using BookstoreApplication.DTO;
 
-namespace BookstoreApplication.Models
+namespace BookstoreApplication.Models.IRepositoies
 {
     public interface IPublishersRepository
     {

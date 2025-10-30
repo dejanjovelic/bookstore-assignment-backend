@@ -2,7 +2,7 @@
 using BookstoreApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookstoreApplication.Services
+namespace BookstoreApplication.Services.IServices
 {
     public interface IPublisherService : IPublisherReadService
     {

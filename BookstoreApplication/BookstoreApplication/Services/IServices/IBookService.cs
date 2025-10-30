@@ -1,7 +1,7 @@
 ﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
 
-namespace BookstoreApplication.Services
+namespace BookstoreApplication.Services.IServices
 {
     public interface IBookService
     {
@@ -10,6 +10,7 @@ namespace BookstoreApplication.Services
         Task<Book> CreateAsync(Book book);
         Task<Book> UpdateAsync(int id, Book book);
         Task DeleteAsync(int id);
-
+        List<BookSortTypeDto> GetAllSortTypes();
+        Task<IEnumerable<BookDetailsDto>> GetSortedBooksAsync(int sortType);
     }
 }

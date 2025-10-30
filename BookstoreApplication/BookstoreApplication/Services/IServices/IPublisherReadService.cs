@@ -1,6 +1,6 @@
 ﻿using BookstoreApplication.Models;
 
-namespace BookstoreApplication.Services
+namespace BookstoreApplication.Services.IServices
 {
     public interface IPublisherReadService
     {

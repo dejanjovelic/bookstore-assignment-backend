@@ -1,6 +1,8 @@
 using BookstoreApplication.Models;
+using BookstoreApplication.Models.IRepositoies;
 using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
+using BookstoreApplication.Services.IServices;
 using BookstoreApplication.Settings;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;

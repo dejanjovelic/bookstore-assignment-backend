@@ -2,10 +2,10 @@
 using BookstoreApplication.Models;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Repositories;
-using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using BookstoreApplication.Services.IServices;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
