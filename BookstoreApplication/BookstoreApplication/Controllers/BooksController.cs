@@ -79,9 +79,16 @@ namespace BookstoreApplication.Controllers
 
         // GET/api/books/sort
         [HttpGet("sort")]
-        public async Task<IActionResult> GetSortedBooksAsync([FromQuery] int sortType=(int)BookSortType.BOOK_TITLE_ASC)
+        public async Task<IActionResult> GetSortedBooksAsync([FromQuery] int sortType = (int)BookSortType.BOOK_TITLE_ASC)
         {
             return Ok(await _bookService.GetSortedBooksAsync(sortType));
+        }
+
+        // POST/api/books/filterAndSort?sortType=1
+        [HttpPost("filterAndSort")]
+        public async Task<IActionResult> GetFilteredAndSortedBooksAsync([FromBody] BookFilterDto filterDto, [FromQuery] int sortType = (int)BookSortType.BOOK_TITLE_ASC)
+        {
+            return Ok(await _bookService.GetFilteredAnsSortedBooksAsync(filterDto, sortType));
         }
     }
 }

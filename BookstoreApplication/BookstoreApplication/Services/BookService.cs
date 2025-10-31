@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
-using BookstoreApplication.Exceptions;
+using AutoMapper.QueryableExtensions;
 using BookstoreApplication.DTO;
+using BookstoreApplication.Exceptions;
 using BookstoreApplication.Models;
-using BookstoreApplication.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using BookstoreApplication.Models.IRepositoies;
 using BookstoreApplication.Services.IServices;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper.QueryableExtensions;
 
 namespace BookstoreApplication.Services
 {
@@ -162,6 +160,22 @@ namespace BookstoreApplication.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<BookDetailsDto>> GetFilteredAnsSortedBooksAsync(BookFilterDto filterDto, int sortType)
+        {
+            if (filterDto == null)
+            {
+                throw new BadRequestException("Invalid filter data.");
+            }
+
+            IQueryable<Book> books = _bookRepository.GetBaseBooks();
+            books = FilterBooks(books, filterDto);
+            books = SortBooks(books, sortType);
+
+            return await books
+                .ProjectTo<BookDetailsDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        }
+
         public static IQueryable<Book> SortBooks(IQueryable<Book> books, int sortType)
         {
             return sortType switch
@@ -174,6 +188,39 @@ namespace BookstoreApplication.Services
                 (int)BookSortType.AUTHORS_FULLNAME_DESC => books.OrderByDescending(book => book.Author.FullName),
                 _ => books.OrderBy(book => book.Title)
             };
+        }
+
+        public static IQueryable<Book> FilterBooks(IQueryable<Book> books, BookFilterDto filterDto)
+        {
+            if (!string.IsNullOrEmpty(filterDto.Title))
+            {
+                books = books.Where(book => (book.Title.Trim().ToLower()).Contains(filterDto.Title.Trim().ToLower()));
+            }
+            if (filterDto.PublishedDateFrom != null)
+            {
+                books = books.Where(book => book.PublishedDate >= filterDto.PublishedDateFrom);
+            }
+            if (filterDto.PublishedDateTo != null)
+            {
+                books = books.Where(book => book.PublishedDate <= filterDto.PublishedDateTo);
+            }
+            if (!string.IsNullOrEmpty(filterDto.AuthorFullName))
+            {
+                books = books.Where(book => book.Author.FullName.Trim().ToLower() == filterDto.AuthorFullName.Trim().ToLower());
+            }
+            if (!string.IsNullOrEmpty(filterDto.AuthorFirstName))
+            {
+                books = books.Where(book => book.Author.FullName.Trim().ToLower().Contains(filterDto.AuthorFirstName.Trim().ToLower()));
+            }
+            if (filterDto.AuthorDateOfBirthFrom != null)
+            {
+                books = books.Where(book => book.Author.DateOfBirth >= filterDto.AuthorDateOfBirthFrom);
+            }
+            if (filterDto.AuthorDateOfBirthTo != null)
+            {
+                books = books.Where(book => book.Author.DateOfBirth <= filterDto.AuthorDateOfBirthTo);
+            }
+            return books;
         }
     }
 }

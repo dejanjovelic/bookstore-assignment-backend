@@ -1,5 +1,6 @@
 ﻿using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookstoreApplication.Services.IServices
 {
@@ -12,5 +13,6 @@ namespace BookstoreApplication.Services.IServices
         Task DeleteAsync(int id);
         List<BookSortTypeDto> GetAllSortTypes();
         Task<IEnumerable<BookDetailsDto>> GetSortedBooksAsync(int sortType);
+        Task<IEnumerable<BookDetailsDto>> GetFilteredAnsSortedBooksAsync(BookFilterDto filterDto, int sortType );
     }
 }

@@ -10,10 +10,3 @@
         AUTHORS_FULLNAME_DESC
     }
 }
-
-//nazivu knjige(rastuće i opadajuće)
-//datumu izdavanja knjige (rastuće i opadajuće)
-//imenu autora knjige (rastuće i opadajuće)
-//Ako sortiranje nije izabrano (npr. prilikom prve posete ovoj stranici),
-//sortirati podatke prema nazivu u rastućem redosledu.
-//Izbor tipa sortiranja implementirati pomoću padajućeg menija.

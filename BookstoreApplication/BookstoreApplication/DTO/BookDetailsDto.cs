@@ -11,6 +11,7 @@ namespace BookstoreApplication.DTO
         public required string ISBN { get; set; }
         public int AuthorId { get; set; }
         public string AuthorFullName { get; set; }
+        public DateTime AuthorDateOfBirth { get; set; }
         public int PublisherId { get; set; }
         public string PublisherName { get; set; }
     }
