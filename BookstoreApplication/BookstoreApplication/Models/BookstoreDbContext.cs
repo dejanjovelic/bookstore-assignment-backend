@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BookstoreApplication.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Models
 {
-    public class BookstoreDbContext : DbContext
+    public class BookstoreDbContext : IdentityDbContext<ApplicationUser>
     {
         public BookstoreDbContext(DbContextOptions<BookstoreDbContext> options) : base(options)
         {
@@ -17,6 +19,8 @@ namespace BookstoreApplication.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<AuthorAwardRecord>(entity =>
             {
                 entity.ToTable("AuthorAwardBridge");

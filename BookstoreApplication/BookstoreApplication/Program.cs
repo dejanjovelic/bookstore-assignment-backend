@@ -5,6 +5,7 @@ using BookstoreApplication.Services;
 using BookstoreApplication.Services.IServices;
 using BookstoreApplication.Settings;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Threading.RateLimiting;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<IPublisherReadService, PublisherService>();
 builder.Services.AddScoped<IPublishersRepository, PublishersRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAutoMapper(cfg =>                                                       // Dodavanje AutoMapera
 cfg.AddProfile<BookProfile>()
@@ -45,6 +47,21 @@ builder.Services.AddTransient<ExceptionHandlingMiddleware>();                   
 builder.Services.AddDbContext<BookstoreDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));         // Dodavanje DBContext klase
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()                               //Registracija Identity-ja
+    .AddEntityFrameworkStores<BookstoreDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.Configure<IdentityOptions>(options =>                                      //Definisanje uslova koje lozinka mora da ispuni
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+}
+);
+
+builder.Services.AddAuthentication();                                                       // Dodavanje autentifikacije
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -60,6 +77,7 @@ builder.Logging.AddSerilog(logger);
 
 
 var app = builder.Build();
+
 app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
@@ -68,6 +86,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();                                                                        // Ukljucivanje autentifikacije;
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();                                               // Naredba da se Middleware koristi.
 
