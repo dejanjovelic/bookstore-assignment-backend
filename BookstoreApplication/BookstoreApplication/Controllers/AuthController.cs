@@ -3,6 +3,7 @@ using BookstoreApplication.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BookstoreApplication.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BookstoreApplication.Controllers
 {
@@ -18,7 +19,7 @@ namespace BookstoreApplication.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegistrationDto data) 
+        public async Task<IActionResult> Register([FromBody] RegistrationDto data) 
         {
             if (!ModelState.IsValid) 
             {
@@ -30,14 +31,21 @@ namespace BookstoreApplication.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync(LoginDto data)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginDto data)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            await _authService.LoginAsync(data);
-            return Ok();
+            
+            return Ok(await _authService.LoginAsync(data));
+        }
+
+        [Authorize]
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile() 
+        {
+            return Ok(await _authService.GetProfile(User));
         }
     }
 }

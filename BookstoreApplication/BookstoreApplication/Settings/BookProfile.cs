@@ -15,6 +15,7 @@ namespace BookstoreApplication.Settings
                 opt => opt.MapFrom(src => DateTime.Today.Year - src.PublishedDate.Year));
             CreateMap<Book, BookDetailsDto>();
             CreateMap<RegistrationDto, ApplicationUser>();
+            CreateMap<ApplicationUser, ProfileDto>();
         }
     }
 }
