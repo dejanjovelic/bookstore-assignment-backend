@@ -14,6 +14,7 @@ using System.Threading.RateLimiting;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
+using BookstoreApplication.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,7 +67,7 @@ builder.Services.Configure<IdentityOptions>(options =>                          
 }
 );
 
-// Konfigurisanje Authentification
+// Konfigurisanje Autentifikacije
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -91,14 +92,24 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CreateBook",
+        policy => policy.RequireRole("Editor", "Librarian"));
+    options.AddPolicy("EditBook",
+        policy => policy.RequireRole("Editor"));
+    options.AddPolicy("DeleteBook",
+        policy => policy.RequireRole("Editor"));
+});
 
-// Dodavanje autentifikacije
+
+// Dodavanje Autentifikacije
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 
-// Podesavanje swagger-a za Authentification
+// Podesavanje Swagger-a za Autentifikaciju
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Building Example API", Version = "v1" });
@@ -123,12 +134,12 @@ builder.Services.AddSwaggerGen(c =>
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
-            }, 
+            },
             Array.Empty<string>()
         }
     });
 });
-    
+
 
 var logger = new LoggerConfiguration()                                                      // Postavljanje SeriLogera
     .ReadFrom.Configuration(builder.Configuration)
@@ -140,6 +151,12 @@ builder.Logging.AddSerilog(logger);
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedData.InitializeAsync(services);
+}
+
 app.UseCors("AllowAllOrigins");
 
 // Configure the HTTP request pipeline.
@@ -150,6 +167,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();                                                                        // Ukljucivanje autentifikacije;
+
+app.UseAuthorization();                                                                         // Uvodjenje autorizacije;
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();                                               // Naredba da se Middleware koristi.
 

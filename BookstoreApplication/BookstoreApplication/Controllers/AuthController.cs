@@ -18,10 +18,11 @@ namespace BookstoreApplication.Controllers
             _authService = authService;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationDto data) 
+        public async Task<IActionResult> Register([FromBody] RegistrationDto data)
         {
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -30,6 +31,7 @@ namespace BookstoreApplication.Controllers
             return NoContent();
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginDto data)
         {
@@ -37,13 +39,13 @@ namespace BookstoreApplication.Controllers
             {
                 return BadRequest(ModelState);
             }
-            
+
             return Ok(await _authService.LoginAsync(data));
         }
 
         [Authorize]
         [HttpGet("profile")]
-        public async Task<IActionResult> GetProfile() 
+        public async Task<IActionResult> GetProfile()
         {
             return Ok(await _authService.GetProfile(User));
         }

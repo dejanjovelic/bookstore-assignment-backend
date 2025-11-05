@@ -1,4 +1,5 @@
 ﻿using BookstoreApplication.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -102,16 +103,21 @@ namespace BookstoreApplication.Models
                 );
 
             modelBuilder.Entity<Book>()
-                .HasOne(book=>book.Author)
+                .HasOne(book => book.Author)
                 .WithMany()
-                .HasForeignKey(book=>book.AuthorId)
+                .HasForeignKey(book => book.AuthorId)
                 .OnDelete(DeleteBehavior.Cascade);  // kaskadno brisanje svih knjiga obrisanog autora
 
             modelBuilder.Entity<Book>()
-                .HasOne(book=>book.Publisher)
+                .HasOne(book => book.Publisher)
                 .WithMany()
-                .HasForeignKey(book=>book.PublisherId)
+                .HasForeignKey(book => book.PublisherId)
                 .OnDelete(DeleteBehavior.Cascade);  // kaskadno brisanje svih knjiga obrisanog izdavača
+
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Name = "Librarian", NormalizedName = "LIBRARIAN" },
+                new IdentityRole { Name = "Editor", NormalizedName = "EDITOR" }
+                );
         }
     }
 }

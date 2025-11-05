@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using BookstoreApplication.Exceptions;
 using BookstoreApplication.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -39,6 +40,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // POST api/books
+        [Authorize(Policy = "CreateBook")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Book book)
         {
@@ -51,6 +53,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // PUT api/books/5
+        [Authorize("EditBook")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, Book book)
         {
@@ -63,6 +66,7 @@ namespace BookstoreApplication.Controllers
         }
 
         // DELETE api/books/5
+        [Authorize("DeleteBook")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
