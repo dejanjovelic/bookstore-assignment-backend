@@ -15,6 +15,7 @@ using System.Text;
 using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using BookstoreApplication.Data;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,6 +74,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+    .AddCookie()
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -90,6 +92,16 @@ builder.Services.AddAuthentication(options =>
 
             RoleClaimType = ClaimTypes.Role
         };
+    })
+    .AddGoogle("Google", options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+        options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_name");
+        options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_name");
+
+        options.CallbackPath = "/api/Auth/signin-google";
     });
 
 builder.Services.AddAuthorization(options =>
@@ -165,14 +177,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseAuthentication();                                                                        // Ukljucivanje autentifikacije;
-
-app.UseAuthorization();                                                                         // Uvodjenje autorizacije;
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();                                               // Naredba da se Middleware koristi.
 
-app.UseAuthorization();
+app.UseAuthentication();                                                                        // Ukljucivanje autentifikacije;
+app.UseAuthorization();                                                                         // Uvodjenje autorizacije;
 
 app.MapControllers();
 

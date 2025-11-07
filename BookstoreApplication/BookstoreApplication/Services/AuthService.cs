@@ -23,7 +23,7 @@ namespace BookstoreApplication.Services
             _configuration = configuration;
         }
 
-        public async Task RegisterAsync(RegistrationDto data) 
+        public async Task<string> RegisterAsync(RegistrationDto data) 
         {
             var user = _mapper.Map<ApplicationUser>(data);
             var result = await _userManager.CreateAsync(user, data.Password);
@@ -38,6 +38,8 @@ namespace BookstoreApplication.Services
             {
                 await _userManager.AddToRoleAsync(user, "Librarian");
             }
+            var token = await GenerateJwt(user);
+            return token;
 
         }
 
@@ -64,6 +66,7 @@ namespace BookstoreApplication.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim("username", user.UserName),
+
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -95,6 +98,32 @@ namespace BookstoreApplication.Services
                 throw new NotFoundException("User with provided username does not exist.");
             }
             return _mapper.Map<ProfileDto>(user);
+        }
+
+        public async Task<string> LoginWithGoogle(string email, string? name, string? surname) 
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Name = name,
+                    Surname = surname
+                };
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Librarian");
+                }
+                else 
+                {
+                    throw new BadRequestException("Google login failed: user creation error");
+                }
+            }
+            var token = await GenerateJwt(user);
+            return token;
         }
     }
 }
