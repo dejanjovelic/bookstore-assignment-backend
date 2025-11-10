@@ -16,6 +16,7 @@ using System.Security.Claims;
 using Microsoft.OpenApi.Models;
 using BookstoreApplication.Data;
 using Microsoft.AspNetCore.Authentication;
+using BookstoreApplication.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,10 +44,18 @@ builder.Services.AddScoped<IPublishersRepository, PublishersRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IBooksRepository, BooksRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IVolumeService, VolumeService>();
+builder.Services.AddScoped<IComicVineConnection, ComicVineConnection>();
+builder.Services.AddScoped<IIssueService, IssueService>();
+builder.Services.AddScoped<IIssuesRepository, IssuesRepository>();
+
+builder.Services.AddHttpClient<ComicVineConnection>();
 
 builder.Services.AddAutoMapper(cfg =>                                                       // Dodavanje AutoMapera
-cfg.AddProfile<BookProfile>()
-);
+{                                                       
+    cfg.AddProfile<BookProfile>();
+    cfg.AddProfile<IssueProfile>();
+});
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();                               // Dodavanje Middleware
 

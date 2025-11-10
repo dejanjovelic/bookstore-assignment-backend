@@ -17,6 +17,7 @@ namespace BookstoreApplication.Models
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Award> Award { get; set; }
         public DbSet<AuthorAwardRecord> AuthorAwardRecord { get; set; }
+        public DbSet<Issue> Issues { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

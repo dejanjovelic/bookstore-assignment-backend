@@ -1,7 +1,7 @@
 ﻿using BookstoreApplication.DTO;
 using System.Security.Claims;
 
-namespace BookstoreApplication.Services
+namespace BookstoreApplication.Services.IServices
 {
     public interface IAuthService
     {
