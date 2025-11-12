@@ -1,5 +1,5 @@
-﻿using BookstoreApplication.DTO;
-using BookstoreApplication.Models;
+﻿using BookstoreApplication.Models;
+using BookstoreApplication.Services.DTO;
 
 namespace BookstoreApplication.Services.IServices
 {

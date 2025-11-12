@@ -13,6 +13,7 @@ namespace BookstoreApplication.Models
         public DateTime PublishedDate { get; set; }
         [Required]
         public required string ISBN { get; set; }
+        public double AverageRating { get; set; } = 0;
 
         [Required]
         public int AuthorId { get; set; }

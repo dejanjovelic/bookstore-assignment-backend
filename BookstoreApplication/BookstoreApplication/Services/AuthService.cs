@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BookstoreApplication.DTO;
-using BookstoreApplication.Exceptions;
+using BookstoreApplication.Services.Exceptions;
+using BookstoreApplication.Services.DTO;
 using BookstoreApplication.Services.IServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BookstoreApplication.Models;
 
 namespace BookstoreApplication.Services
 {
@@ -67,7 +68,6 @@ namespace BookstoreApplication.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim("username", user.UserName),
-
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

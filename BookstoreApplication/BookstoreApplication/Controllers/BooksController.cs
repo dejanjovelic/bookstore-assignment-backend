@@ -1,13 +1,13 @@
 ﻿using BookstoreApplication.Data;
-using BookstoreApplication.DTO;
 using BookstoreApplication.Models;
-using BookstoreApplication.Repositories;
+using BookstoreApplication.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using BookstoreApplication.Exceptions;
+using BookstoreApplication.Services.Exceptions;
 using BookstoreApplication.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
+using BookstoreApplication.Services.DTO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

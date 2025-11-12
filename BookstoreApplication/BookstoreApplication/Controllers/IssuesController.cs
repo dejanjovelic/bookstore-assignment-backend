@@ -1,4 +1,4 @@
-﻿using BookstoreApplication.DTO;
+﻿using BookstoreApplication.Services.DTO;
 using BookstoreApplication.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

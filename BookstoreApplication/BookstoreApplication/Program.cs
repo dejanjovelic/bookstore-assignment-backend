@@ -1,9 +1,6 @@
-using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepositoies;
-using BookstoreApplication.Repositories;
 using BookstoreApplication.Services;
 using BookstoreApplication.Services.IServices;
-using BookstoreApplication.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +14,10 @@ using Microsoft.OpenApi.Models;
 using BookstoreApplication.Data;
 using Microsoft.AspNetCore.Authentication;
 using BookstoreApplication.Infrastructure;
+using BookstoreApplication.Infrastructure.Repositories;
+using BookstoreApplication.Services.Mappings;
+using BookstoreApplication.Controllers.Middleware;
+using BookstoreApplication.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,9 @@ builder.Services.AddScoped<IVolumeService, VolumeService>();
 builder.Services.AddScoped<IComicVineConnection, ComicVineConnection>();
 builder.Services.AddScoped<IIssueService, IssueService>();
 builder.Services.AddScoped<IIssuesRepository, IssuesRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Services.AddHttpClient<ComicVineConnection>();
 
@@ -55,6 +59,7 @@ builder.Services.AddAutoMapper(cfg =>                                           
 {                                                       
     cfg.AddProfile<BookProfile>();
     cfg.AddProfile<IssueProfile>();
+    cfg.AddProfile<ReviewProfile>();
 });
 
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();                               // Dodavanje Middleware

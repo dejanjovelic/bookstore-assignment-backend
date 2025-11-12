@@ -1,7 +1,7 @@
 ﻿using BookstoreApplication.Services.IServices;
 using BookstoreApplication.Controllers;
-using BookstoreApplication.DTO;
 using System.Text.Json;
+using BookstoreApplication.Services.DTO;
 
 namespace BookstoreApplication.Services
 {

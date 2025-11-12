@@ -1,4 +1,4 @@
-﻿using BookstoreApplication.DTO;
+﻿using BookstoreApplication.Services.DTO;
 using System.Security.Claims;
 
 namespace BookstoreApplication.Services.IServices

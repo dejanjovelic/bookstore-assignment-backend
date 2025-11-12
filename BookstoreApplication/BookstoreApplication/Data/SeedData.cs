@@ -1,4 +1,4 @@
-﻿using BookstoreApplication.Services;
+﻿using BookstoreApplication.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace BookstoreApplication.Data

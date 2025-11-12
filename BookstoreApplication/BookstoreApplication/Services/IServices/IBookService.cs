@@ -1,5 +1,5 @@
-﻿using BookstoreApplication.DTO;
-using BookstoreApplication.Models;
+﻿using BookstoreApplication.Models;
+using BookstoreApplication.Services.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookstoreApplication.Services.IServices

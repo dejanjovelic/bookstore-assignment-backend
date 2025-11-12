@@ -1,5 +1,5 @@
-﻿using BookstoreApplication.DTO;
-using BookstoreApplication.Exceptions;
+﻿using BookstoreApplication.Services.Exceptions;
+using BookstoreApplication.Services.DTO;
 using BookstoreApplication.Services.IServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

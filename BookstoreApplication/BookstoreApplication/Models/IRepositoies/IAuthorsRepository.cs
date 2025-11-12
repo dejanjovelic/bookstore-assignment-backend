@@ -1,4 +1,4 @@
-﻿using BookstoreApplication.DTO;
+﻿using BookstoreApplication.Services.DTO;
 
 namespace BookstoreApplication.Models.IRepositoies
 {

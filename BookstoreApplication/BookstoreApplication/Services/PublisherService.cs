@@ -1,8 +1,9 @@
-﻿using BookstoreApplication.DTO;
-using BookstoreApplication.Exceptions;
+﻿using BookstoreApplication.Services.Exceptions;
+using BookstoreApplication.Infrastructure;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepositoies;
-using BookstoreApplication.Repositories;
+using BookstoreApplication.Infrastructure.Repositories;
+using BookstoreApplication.Services.DTO;
 using BookstoreApplication.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,6 +1,6 @@
 ﻿using BookstoreApplication.Models;
-using BookstoreApplication.Exceptions;
-using BookstoreApplication.Repositories;
+using BookstoreApplication.Services.Exceptions;
+using BookstoreApplication.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using BookstoreApplication.Models.IRepositoies;
 using BookstoreApplication.Services.IServices;

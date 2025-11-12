@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using BookstoreApplication.DTO;
-using BookstoreApplication.Exceptions;
+using BookstoreApplication.Services.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepositoies;
+using BookstoreApplication.Services.DTO;
 using BookstoreApplication.Services.IServices;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,10 +1,10 @@
-﻿using BookstoreApplication.DTO;
-using BookstoreApplication.Services.IServices;
+﻿using BookstoreApplication.Services.IServices;
 using System.Text.Json;
-using BookstoreApplication.Exceptions;
+using BookstoreApplication.Services.Exceptions;
 using BookstoreApplication.Models.IRepositoies;
 using AutoMapper;
 using BookstoreApplication.Models;
+using BookstoreApplication.Services.DTO;
 
 namespace BookstoreApplication.Services
 {

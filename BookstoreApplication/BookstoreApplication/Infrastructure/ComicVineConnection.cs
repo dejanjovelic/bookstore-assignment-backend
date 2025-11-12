@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Net;
-using BookstoreApplication.Exceptions;
+using BookstoreApplication.Services.Exceptions;
 using BookstoreApplication.Services.IServices;
 
 namespace BookstoreApplication.Infrastructure
