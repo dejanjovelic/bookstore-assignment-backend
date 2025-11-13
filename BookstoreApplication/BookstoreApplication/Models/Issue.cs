@@ -1,10 +1,14 @@
 ﻿using BookstoreApplication.Services.DTO;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace BookstoreApplication.Models
 {
     public class Issue
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string Id { get; set; }
         public string Name { get; set; }
         public DateTime CoverDate { get; set; }
         public string IssueNumber { get; set; }

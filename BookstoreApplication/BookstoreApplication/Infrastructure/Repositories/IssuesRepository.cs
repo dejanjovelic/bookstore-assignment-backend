@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Infrastructure.Repositories
 {
-    public class IssuesRepository : IIssuesRepository
+    public class IssuesRepository
     {
         private readonly BookstoreDbContext _context;
 
