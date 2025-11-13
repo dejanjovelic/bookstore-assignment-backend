@@ -121,17 +121,10 @@ namespace BookstoreApplication.Infrastructure
                 new IdentityRole { Id = "f8b18eb4-9ac9-46e9-9177-6bae7b9fc902", Name = "Editor", NormalizedName = "EDITOR" }
                 );
 
-            //modelBuilder.Entity<Review>()
-            //    .HasOne(review=>review.User)
-            //    .WithMany()
-            //    .HasForeignKey(review=>review.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Review>()
-            //    .HasOne(review => review.Book)
-            //    .WithMany()
-            //    .HasForeignKey(review => review.BookId)
-            //    .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Author>()
+                .HasIndex(author => author.FullName)
+                .HasDatabaseName("IX_Authors_FullName");
+            
         }
     }
 }
