@@ -81,18 +81,25 @@ namespace BookstoreApplication.Controllers
             return Ok(_bookService.GetAllSortTypes());
         }
 
-        // GET/api/books/sort
-        [HttpGet("sort")]
-        public async Task<IActionResult> GetSortedBooksAsync([FromQuery] int sortType = (int)BookSortType.BOOK_TITLE_ASC)
+        // GET/api/books/sortedAndPaginated?sortPage=0&page=1&pageSize=10
+        [HttpGet("sortedAndPaginated")]
+        public async Task<IActionResult> GetSortedAndPaginatedBooksAsync(
+            [FromQuery] int sortType = (int)BookSortType.BOOK_TITLE_ASC,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            return Ok(await _bookService.GetSortedBooksAsync(sortType));
+            return Ok(await _bookService.GetSortedAndPaginatedBooksAsync(sortType, page, pageSize));
         }
 
-        // POST/api/books/filterAndSort?sortType=1
-        [HttpPost("filterAndSort")]
-        public async Task<IActionResult> GetFilteredAndSortedBooksAsync([FromBody] BookFilterDto filterDto, [FromQuery] int sortType = (int)BookSortType.BOOK_TITLE_ASC)
+        // POST/api/books/filteredAndSortedAndPaginated?sortType=1
+        [HttpPost("filteredAndSortedAndPaginated")]
+        public async Task<IActionResult> GetFilteredAndSortedAndPaginatedBooksAsync(
+            [FromBody] BookFilterDto filterDto,
+            [FromQuery] int sortType = (int)BookSortType.BOOK_TITLE_ASC,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            return Ok(await _bookService.GetFilteredAnsSortedBooksAsync(filterDto, sortType));
+            return Ok(await _bookService.GetFilteredAndSortedAndPaginatedBooksAsync(filterDto, sortType, page, pageSize));
         }
     }
 }

@@ -9,6 +9,8 @@ namespace BookstoreApplication.Models.IRepositoies
         Task<Book> CreateAsync(Book book);
         Task<Book> UpdateAsync(Book book);
         Task DeleteAsync(Book book);
-        IQueryable<Book> GetBaseBooks();
+        Task<PaginatedListDto<Book>> GetSortedAndPaginatedBooksAsync(int sortType, int page, int pageSize);
+        Task<PaginatedListDto<Book>> GetFilteredAndSortedAndPaginatedBooksAsync(BookFilterDto filterDto, int sortType, int page, int PageSize);
+       
     }
 }

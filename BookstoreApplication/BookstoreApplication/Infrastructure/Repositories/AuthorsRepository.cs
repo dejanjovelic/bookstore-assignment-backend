@@ -2,6 +2,7 @@
 using BookstoreApplication.Models.IRepositoies;
 using BookstoreApplication.Services.DTO;
 using Microsoft.EntityFrameworkCore;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookstoreApplication.Infrastructure.Repositories
 {
@@ -18,7 +19,6 @@ namespace BookstoreApplication.Infrastructure.Repositories
         {
                 return await _context.Authors.ToListAsync();
         }
-
         public async Task<Author> GetByIdAsync(int id)
         {
                 return await _context.Authors.FindAsync(id);
@@ -44,6 +44,7 @@ namespace BookstoreApplication.Infrastructure.Repositories
                 _context.Remove(author);
                 await _context.SaveChangesAsync();
         }
+
         public async Task<PaginatedListDto<Author>> GetAllAuthorsPaginatedAsync(int page, int pageSize) 
         {
 

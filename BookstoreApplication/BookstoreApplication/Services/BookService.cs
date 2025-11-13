@@ -1,10 +1,11 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using BookstoreApplication.Services.Exceptions;
 using BookstoreApplication.Models;
 using BookstoreApplication.Models.IRepositoies;
 using BookstoreApplication.Services.DTO;
+using BookstoreApplication.Services.Exceptions;
 using BookstoreApplication.Services.IServices;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreApplication.Services
@@ -145,82 +146,57 @@ namespace BookstoreApplication.Services
             return bookSortTypeDtos;
         }
 
-        public async Task<IEnumerable<BookDetailsDto>> GetSortedBooksAsync(int sortType)
+        public async Task<PaginatedListDto<BookDetailsDto>> GetSortedAndPaginatedBooksAsync(int sortType, int page, int pageSize)
         {
             if (sortType < 0)
             {
                 throw new BadRequestException("Sort type must be greather than 0.");
             }
+            if (page < 1)
+            {
+                throw new BadRequestException("Page must be greather than 0.");
+            }
+            if (pageSize < 1)
+            {
+                throw new BadRequestException("The value must be a positive integer greater than zero.");
+            }
 
-            _logger.LogInformation($"Geting all sorted books.");
-            IQueryable<Book> books = _bookRepository.GetBaseBooks();
+            _logger.LogInformation("Fetching all books sorted by {SortType}.", sortType);
 
-            return await SortBooks(books, sortType)
-                .ProjectTo<BookDetailsDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            PaginatedListDto<Book> books = await _bookRepository.GetSortedAndPaginatedBooksAsync(sortType, page, pageSize);
+            List<BookDetailsDto> BooksDtos = books.Items.Select(_mapper.Map<BookDetailsDto>).ToList();
+
+            return new PaginatedListDto<BookDetailsDto>(BooksDtos, books.TotalRowCount, books.PageIndex, pageSize);
         }
 
-        public async Task<IEnumerable<BookDetailsDto>> GetFilteredAnsSortedBooksAsync(BookFilterDto filterDto, int sortType)
+        public async Task<PaginatedListDto<BookDetailsDto>> GetFilteredAndSortedAndPaginatedBooksAsync(BookFilterDto filterDto, int sortType, int page, int pageSize)
         {
             if (filterDto == null)
             {
                 throw new BadRequestException("Invalid filter data.");
             }
+            if (sortType < 0)
+            {
+                throw new BadRequestException("Sort type must be greather than 0.");
+            }
+            if (page < 1)
+            {
+                throw new BadRequestException("Page must be greather than 0.");
+            }
+            if (pageSize < 1)
+            {
+                throw new BadRequestException("The value must be a positive integer greater than zero.");
+            }
 
-            IQueryable<Book> books = _bookRepository.GetBaseBooks();
-            books = FilterBooks(books, filterDto);
-            books = SortBooks(books, sortType);
+            _logger.LogInformation(
+                "Fetching books with filter: {@FilterDto}, SortType: {SortType}, Page: {Page}, PageSize: {PageSize}",
+                filterDto, sortType, page, pageSize);
 
-            return await books
-                .ProjectTo<BookDetailsDto>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            PaginatedListDto<Book> filteredAndPaginatedAndSortedBooks = await _bookRepository.GetFilteredAndSortedAndPaginatedBooksAsync(filterDto, sortType, page, pageSize);
+            List<BookDetailsDto> BooksDtos = filteredAndPaginatedAndSortedBooks.Items.Select(_mapper.Map<BookDetailsDto>).ToList();
+            return new PaginatedListDto<BookDetailsDto>(BooksDtos, filteredAndPaginatedAndSortedBooks.TotalRowCount, filteredAndPaginatedAndSortedBooks.PageIndex, pageSize);
         }
 
-        public static IQueryable<Book> SortBooks(IQueryable<Book> books, int sortType)
-        {
-            return sortType switch
-            {
-                (int)BookSortType.BOOK_TITLE_ASC => books.OrderBy(book => book.Title),
-                (int)BookSortType.BOOK_TITLE_DESC => books.OrderByDescending(book => book.Title),
-                (int)BookSortType.PUBLISHED_DATE_ASC => books.OrderBy(book => book.PublishedDate),
-                (int)BookSortType.PUBLISHED_DATE_DESC => books.OrderByDescending(book => book.PublishedDate),
-                (int)BookSortType.AUTHORS_FULLNAME_ASC => books.OrderBy(book => book.Author.FullName),
-                (int)BookSortType.AUTHORS_FULLNAME_DESC => books.OrderByDescending(book => book.Author.FullName),
-                _ => books.OrderBy(book => book.Title)
-            };
-        }
 
-        public static IQueryable<Book> FilterBooks(IQueryable<Book> books, BookFilterDto filterDto)
-        {
-            if (!string.IsNullOrEmpty(filterDto.Title))
-            {
-                books = books.Where(book => (book.Title.Trim().ToLower()).Contains(filterDto.Title.Trim().ToLower()));
-            }
-            if (filterDto.PublishedDateFrom != null)
-            {
-                books = books.Where(book => book.PublishedDate >= filterDto.PublishedDateFrom);
-            }
-            if (filterDto.PublishedDateTo != null)
-            {
-                books = books.Where(book => book.PublishedDate <= filterDto.PublishedDateTo);
-            }
-            if (!string.IsNullOrEmpty(filterDto.AuthorFullName))
-            {
-                books = books.Where(book => book.Author.FullName.Trim().ToLower() == filterDto.AuthorFullName.Trim().ToLower());
-            }
-            if (!string.IsNullOrEmpty(filterDto.AuthorFirstName))
-            {
-                books = books.Where(book => book.Author.FullName.Trim().ToLower().Contains(filterDto.AuthorFirstName.Trim().ToLower()));
-            }
-            if (filterDto.AuthorDateOfBirthFrom != null)
-            {
-                books = books.Where(book => book.Author.DateOfBirth >= filterDto.AuthorDateOfBirthFrom);
-            }
-            if (filterDto.AuthorDateOfBirthTo != null)
-            {
-                books = books.Where(book => book.Author.DateOfBirth <= filterDto.AuthorDateOfBirthTo);
-            }
-            return books;
-        }
     }
 }

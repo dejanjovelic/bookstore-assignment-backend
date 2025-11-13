@@ -1,6 +1,7 @@
 ﻿using BookstoreApplication.Models;
 using BookstoreApplication.Services.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BookstoreApplication.Services.IServices
 {
@@ -12,7 +13,7 @@ namespace BookstoreApplication.Services.IServices
         Task<Book> UpdateAsync(int id, Book book);
         Task DeleteAsync(int id);
         List<BookSortTypeDto> GetAllSortTypes();
-        Task<IEnumerable<BookDetailsDto>> GetSortedBooksAsync(int sortType);
-        Task<IEnumerable<BookDetailsDto>> GetFilteredAnsSortedBooksAsync(BookFilterDto filterDto, int sortType );
+        Task<PaginatedListDto<BookDetailsDto>> GetSortedAndPaginatedBooksAsync(int sortType, int page, int pageSize);
+        Task<PaginatedListDto<BookDetailsDto>> GetFilteredAndSortedAndPaginatedBooksAsync(BookFilterDto filterDto, int sortType, int page, int pageSize);
     }
 }

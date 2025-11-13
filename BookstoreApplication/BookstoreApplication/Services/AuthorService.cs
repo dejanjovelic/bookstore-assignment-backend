@@ -78,6 +78,7 @@ namespace BookstoreApplication.Services
             _logger.LogInformation($"Author with ID: {author.Id} deleted");
             await _authorsRepository.DeleteAsync(author);
         }
+
         public async Task<PaginatedListDto<Author>> GetAllAuthorsPaginatedAsync(int page, int pageSize) 
         {
             if (page < 1)
