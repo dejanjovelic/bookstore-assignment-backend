@@ -47,7 +47,7 @@ namespace BookstoreApplication.Services
 
             return JsonSerializer.Deserialize<List<IssueDto>>(json, options)!;
         }
-        public async Task<object?> CreateAsync(CreateIssueDataDto issueDataDto)
+        public async Task<Issue> CreateAsync(CreateIssueDataDto issueDataDto)
         {
             if (issueDataDto == null)
             {
@@ -58,7 +58,7 @@ namespace BookstoreApplication.Services
 
             if (issue != null)
             {
-                throw new ForbiddenException("Issue allredy exist.");
+                throw new ForbiddenException("Issue allready exist.");
             }
 
             return await _issuesRepository.CreateAsync(_mapper.Map<Issue>(issueDataDto));

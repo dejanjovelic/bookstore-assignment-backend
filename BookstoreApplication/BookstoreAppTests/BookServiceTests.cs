@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BookstoreAppTests
 {
-    public class BookServiceTest
+    public class BookServiceTests
     {
 
         [Fact]
