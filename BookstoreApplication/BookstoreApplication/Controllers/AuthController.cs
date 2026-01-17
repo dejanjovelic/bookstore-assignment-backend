@@ -57,6 +57,7 @@ namespace BookstoreApplication.Controllers
             var properties = new AuthenticationProperties { RedirectUri = "/api/Auth/google-response" };
             return Challenge(properties, "Google");
         }
+
         [HttpGet("google-response")]
         public async Task<IActionResult> GoogleResponse() 
         {

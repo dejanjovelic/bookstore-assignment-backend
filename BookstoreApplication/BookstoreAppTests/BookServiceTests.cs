@@ -8,6 +8,7 @@ using BookstoreApplication.Services.IServices;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
@@ -109,7 +110,11 @@ namespace BookstoreAppTests
             var mockAuthorReadService = Substitute.For<IAuthorReadService>();
 
             var mockMapper = Substitute.For<IMapper>();
-            mockMapper.Map<List<BookDto>>(books).Returns(booksDtos);
+            for (int i = 0; i < books.Count();i++) 
+            {
+                mockMapper.Map<BookDto>(books[i]).Returns(booksDtos[i]);
+            }        
+            
 
             var mockLogger = Substitute.For<ILogger<BookService>>();
 
@@ -121,6 +126,12 @@ namespace BookstoreAppTests
             //Assert
             Assert.NotNull(result);
             result.Count().ShouldBe(3);
+            result.ShouldBeEquivalentTo(booksDtos);
+            await mockBooksRepository.Received(1).GetAllAsync();
+            for (int i = 0; i < books.Count(); i++)
+            {
+                mockMapper.Received(1).Map<BookDto>(books[i]);
+            }
         }
 
 
@@ -172,7 +183,6 @@ namespace BookstoreAppTests
             var mockBooksRepository = Substitute.For<IBooksRepository>();
             mockBooksRepository.GetByIdAsync(1).Returns(book);
 
-
             var mockPublisherReadService = Substitute.For<IPublisherReadService>();
 
             var mockAuthorReadService = Substitute.For<IAuthorReadService>();
@@ -190,8 +200,9 @@ namespace BookstoreAppTests
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal(bookDetailsDto.Id, result.Id);
-
+            result.Id.ShouldBe(bookDetailsDto.Id);
+            await mockBooksRepository.Received(1).GetByIdAsync(book.Id);
+            mockMapper.Received().Map<BookDetailsDto>(book);
         }
 
 
@@ -199,11 +210,9 @@ namespace BookstoreAppTests
         public async Task GetBookByIdAsync_ThrowsNotFoundException_WhenIdIsNotValid()
         {
             //Arange
-            NotFoundException mockException = new NotFoundException("The Book with ID 16 not exist.");
+
             var mockBooksRepository = Substitute.For<IBooksRepository>();
-
             var mockPublisherReadService = Substitute.For<IPublisherReadService>();
-
             var mockAuthorReadService = Substitute.For<IAuthorReadService>();
 
             var mockMapper = Substitute.For<IMapper>();
@@ -212,14 +221,10 @@ namespace BookstoreAppTests
 
             var service = new BookService(mockBooksRepository, mockAuthorReadService, mockPublisherReadService, mockMapper, mockLogger);
 
-            //Act
-
-            var result2 = () => service.GetByIdAsync(16);
-
-            //Assert
-            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(result2);
-            Assert.Equal(mockException.Message, exception.Message);
-
+            //Act & Assert
+            NotFoundException exception = await Assert.ThrowsAsync<NotFoundException>(() => service.GetByIdAsync(16));
+            exception.Message.ShouldBe("The Book with ID 16 not exist.");
+            await mockBooksRepository.Received(1).GetByIdAsync(16);
         }
 
         [Fact]
@@ -261,7 +266,6 @@ namespace BookstoreAppTests
 
             var mockAuthorReadService = Substitute.For<IAuthorReadService>();
             mockAuthorReadService.GetByIdAsync(author.Id).Returns(author);
-
 
             var mockMapper = Substitute.For<IMapper>();
 
@@ -466,9 +470,7 @@ namespace BookstoreAppTests
             var mockBooksRepository = Substitute.For<IBooksRepository>();
             mockBooksRepository.GetByIdAsync(12).Returns((Book)null);
 
-
             var mockPublisherReadService = Substitute.For<IPublisherReadService>();
-
 
             var mockAuthorReadService = Substitute.For<IAuthorReadService>();
             var mockLogger = Substitute.For<ILogger<BookService>>();
@@ -476,7 +478,6 @@ namespace BookstoreAppTests
             var service = new BookService(mockBooksRepository, mockAuthorReadService, mockPublisherReadService, null, mockLogger);
 
             //Act & Assert
-
             NotFoundException resultException = await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateAsync(12, UpdateBook));
             resultException.Message.ShouldBe("The Book with ID 12 not exist.");
             await mockBooksRepository.Received(1).GetByIdAsync(12);
@@ -528,9 +529,7 @@ namespace BookstoreAppTests
             var mockBooksRepository = Substitute.For<IBooksRepository>();
             mockBooksRepository.GetByIdAsync(book.Id).Returns(book);
 
-
             var mockPublisherReadService = Substitute.For<IPublisherReadService>();
-
 
             var mockAuthorReadService = Substitute.For<IAuthorReadService>();
             var mockLogger = Substitute.For<ILogger<BookService>>();
@@ -538,7 +537,6 @@ namespace BookstoreAppTests
             var service = new BookService(mockBooksRepository, mockAuthorReadService, mockPublisherReadService, null, mockLogger);
 
             //Act & Assert
-
             BadRequestException resultException = await Assert.ThrowsAsync<BadRequestException>(() => service.UpdateAsync(book.Id, UpdateBook));
             resultException.Message.ShouldBe($"Book ID mismatch: route ID 1 vs body ID 12");
 
@@ -548,7 +546,6 @@ namespace BookstoreAppTests
         public async Task UpdateAsync_ThrowsNotFoundException_IfAuthorIdIsNotValid()
         {
             //Arange
-
             Publisher publisher = new Publisher
             {
                 Id = 1,
@@ -591,7 +588,6 @@ namespace BookstoreAppTests
             var mockLogger = Substitute.For<ILogger<BookService>>();
 
             var service = new BookService(mockBooksRepository, mockAuthorReadService, mockPublisherReadService, null, mockLogger);
-
 
             //Act & Assert
             NotFoundException resultException = await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateAsync(book.Id, UpdateBook));
@@ -643,11 +639,9 @@ namespace BookstoreAppTests
             var mockPublisherReadService = Substitute.For<IPublisherReadService>();
             mockPublisherReadService.GetByIdAsync(10).Returns((Publisher)null);
 
-           
             var mockLogger = Substitute.For<ILogger<BookService>>();
 
             var service = new BookService(mockBooksRepository, mockAuthorReadService, mockPublisherReadService, null, mockLogger);
-
 
             //Act & Assert
             NotFoundException resultException = await Assert.ThrowsAsync<NotFoundException>(() => service.UpdateAsync(book.Id, UpdateBook));
