@@ -62,7 +62,7 @@ namespace BookstoreApplication.Services
             return token;
         }
 
-        private async Task<string> GenerateJwt(ApplicationUser user)
+       private async Task<string> GenerateJwt(ApplicationUser user)
         {
             var claims = new List<Claim>
             {

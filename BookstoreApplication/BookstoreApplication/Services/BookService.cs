@@ -148,6 +148,18 @@ namespace BookstoreApplication.Services
 
         public async Task<PaginatedListDto<BookDetailsDto>> GetSortedAndPaginatedBooksAsync(int sortType, int page, int pageSize)
         {
+            ValidateSortedAndPaginatedInputData(sortType, page, pageSize);
+
+            _logger.LogInformation("Fetching all books sorted by {SortType}.", sortType);
+
+            PaginatedListDto<Book> books = await _bookRepository.GetSortedAndPaginatedBooksAsync(sortType, page, pageSize);
+            List<BookDetailsDto> BooksDtos = books.Items.Select(_mapper.Map<BookDetailsDto>).ToList();
+
+            return new PaginatedListDto<BookDetailsDto>(BooksDtos, books.TotalRowCount, books.PageIndex, pageSize);
+        }
+
+        private static void ValidateSortedAndPaginatedInputData(int sortType, int page, int pageSize)
+        {
             if (sortType < 0)
             {
                 throw new BadRequestException("Sort type must be greather than 0.");
@@ -160,16 +172,22 @@ namespace BookstoreApplication.Services
             {
                 throw new BadRequestException("The value must be a positive integer greater than zero.");
             }
-
-            _logger.LogInformation("Fetching all books sorted by {SortType}.", sortType);
-
-            PaginatedListDto<Book> books = await _bookRepository.GetSortedAndPaginatedBooksAsync(sortType, page, pageSize);
-            List<BookDetailsDto> BooksDtos = books.Items.Select(_mapper.Map<BookDetailsDto>).ToList();
-
-            return new PaginatedListDto<BookDetailsDto>(BooksDtos, books.TotalRowCount, books.PageIndex, pageSize);
         }
 
         public async Task<PaginatedListDto<BookDetailsDto>> GetFilteredAndSortedAndPaginatedBooksAsync(BookFilterDto filterDto, int sortType, int page, int pageSize)
+        {
+            ValidateFilterSortAndPaginatedInputData(filterDto, sortType, page, pageSize);
+
+            _logger.LogInformation(
+                "Fetching books with filter: {@FilterDto}, SortType: {SortType}, Page: {Page}, PageSize: {PageSize}",
+                filterDto, sortType, page, pageSize);
+
+            PaginatedListDto<Book> filteredAndPaginatedAndSortedBooks = await _bookRepository.GetFilteredAndSortedAndPaginatedBooksAsync(filterDto, sortType, page, pageSize);
+            List<BookDetailsDto> BooksDtos = filteredAndPaginatedAndSortedBooks.Items.Select(_mapper.Map<BookDetailsDto>).ToList();
+            return new PaginatedListDto<BookDetailsDto>(BooksDtos, filteredAndPaginatedAndSortedBooks.TotalRowCount, filteredAndPaginatedAndSortedBooks.PageIndex, pageSize);
+        }
+
+        private static void ValidateFilterSortAndPaginatedInputData(BookFilterDto filterDto, int sortType, int page, int pageSize)
         {
             if (filterDto == null)
             {
@@ -187,16 +205,6 @@ namespace BookstoreApplication.Services
             {
                 throw new BadRequestException("The value must be a positive integer greater than zero.");
             }
-
-            _logger.LogInformation(
-                "Fetching books with filter: {@FilterDto}, SortType: {SortType}, Page: {Page}, PageSize: {PageSize}",
-                filterDto, sortType, page, pageSize);
-
-            PaginatedListDto<Book> filteredAndPaginatedAndSortedBooks = await _bookRepository.GetFilteredAndSortedAndPaginatedBooksAsync(filterDto, sortType, page, pageSize);
-            List<BookDetailsDto> BooksDtos = filteredAndPaginatedAndSortedBooks.Items.Select(_mapper.Map<BookDetailsDto>).ToList();
-            return new PaginatedListDto<BookDetailsDto>(BooksDtos, filteredAndPaginatedAndSortedBooks.TotalRowCount, filteredAndPaginatedAndSortedBooks.PageIndex, pageSize);
         }
-
-
     }
 }
